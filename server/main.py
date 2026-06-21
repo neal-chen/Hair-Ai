@@ -41,6 +41,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# ── 全局异常处理 ──
+
+@app.exception_handler(HTTPException)
+def http_exception_handler(request, exc: HTTPException):
+    """统一 HTTP 异常响应格式"""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"success": False, "message": exc.detail},
+    )
+
+
+@app.exception_handler(Exception)
+def general_exception_handler(request, exc: Exception):
+    """兜底异常处理（生产环境不暴露内部错误）"""
+    return JSONResponse(
+        status_code=500,
+        content={"success": False, "message": "服务器内部错误"},
+    )
+
 # 图片存储目录
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HAIRSTYLE_IMG_DIR = os.path.join(BASE_DIR, "images", "hairstyles")

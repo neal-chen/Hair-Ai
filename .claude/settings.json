@@ -75,7 +75,13 @@
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'{len\\(d[\\\\\"data\\\\\"][\\\\\"hairstyles\\\\\"]\\)} 条'\\); [print\\(f'  {h[\\\\\"name\\\\\"]} — {h[\\\\\"category\\\\\"]}'\\) for h in d['data']['hairstyles'][:3]]\")",
       "Bash(curl -s \"http://localhost:8011/api/hairstyles?q=%E5%8D%B7%E5%8F%91&version=0&device_id=test\")",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'{len\\(d[\\\\\"data\\\\\"][\\\\\"hairstyles\\\\\"]\\)} 条'\\)\")",
-      "Bash(git commit -am 'feat: add text search to hairstyle and color APIs *)"
+      "Bash(git commit -am 'feat: add text search to hairstyle and color APIs *)",
+      "Bash(venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8012)",
+      "Bash(curl -s http://localhost:8012/api/admin/stats)",
+      "Bash(curl -s -X POST http://localhost:8012/api/admin/login -H 'Content-Type: application/json' -d '{\"api_key\":\"wrong\"}')",
+      "Bash(curl -s http://localhost:8012/api/hairstyles/nonexistent)",
+      "Bash(curl -s http://localhost:8012/api/health)",
+      "Bash(git commit -am 'feat: add global exception handler for unified error format *)"
     ],
     "additionalDirectories": [
       "/home/neo/.claude/projects/-home-neo-Hair"
