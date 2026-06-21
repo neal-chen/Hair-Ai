@@ -5,6 +5,8 @@ FastAPI 应用，提供发型库和发色库的查询、增量同步、图片服
 
 import os
 import uuid
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -15,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from database import get_db, init_db, SessionLocal
+from database import engine, get_db, init_db, SessionLocal
 from models import Hairstyle, HairColor, DeviceSyncLog
 from auth import require_admin, ADMIN_API_KEY
 from schemas import (
@@ -29,10 +31,24 @@ logger = setup_logging()
 
 # ── 应用初始化 ──
 
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    """应用生命周期：启动时初始化，关闭时清理"""
+    # ── 启动 ──
+    os.makedirs(HAIRSTYLE_IMG_DIR, exist_ok=True)
+    os.makedirs(COLOR_IMG_DIR, exist_ok=True)
+    init_db()
+    _auto_seed()
+    yield
+    # ── 关闭 ──
+    engine.dispose()
+
+
 app = FastAPI(
     title="发型/发色库 API",
     description="美容美发智能镜 - 发型库 & 发色库服务端",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -95,17 +111,6 @@ def favicon():
     from fastapi.responses import Response
     svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#6366f1"/><text x="16" y="23" text-anchor="middle" font-size="20" fill="white">💇</text></svg>'
     return Response(content=svg, media_type="image/svg+xml")
-
-
-@app.on_event("startup")
-def on_startup():
-    """启动时初始化数据库"""
-    os.makedirs(HAIRSTYLE_IMG_DIR, exist_ok=True)
-    os.makedirs(COLOR_IMG_DIR, exist_ok=True)
-    init_db()
-
-    # 自动导入种子数据（数据库为空时）
-    _auto_seed()
 
 
 def _auto_seed():
