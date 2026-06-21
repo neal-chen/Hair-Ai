@@ -26,6 +26,16 @@ jobs:
           cd server
           pip install -r requirements.txt
 
+      - name: Install dev dependencies
+        run: |
+          cd server
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest (unit + integration)
+        run: |
+          cd server
+          python -m pytest tests/ -v --tb=short
+
       - name: Init database
         run: |
           cd server
@@ -38,7 +48,7 @@ jobs:
           sleep 3
           curl -sf http://127.0.0.1:8000/api/health || exit 1
 
-      - name: Run API tests
+      - name: Run bash API tests
         run: |
           cd server
           ADMIN_API_KEY=hair-admin-dev-2026 bash test_api.sh http://127.0.0.1:8000
@@ -50,7 +60,3 @@ jobs:
           assert len(d['paths']) >= 10, 'OpenAPI endpoint count too low'
           print(f'✅ OpenAPI: {len(d[\"paths\"])} endpoints')
           "
-
-      - name: Server health
-        run: |
-          curl -sf http://127.0.0.1:8000/api/health && echo "✅ Server healthy"

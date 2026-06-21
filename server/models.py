@@ -22,7 +22,7 @@ def serialize_tags(tags) -> str:
     if isinstance(tags, str):
         return tags
     if isinstance(tags, (list, tuple)):
-        return json.dumps(tags, ensure_ascii=False)
+        return json.dumps(tags, ensure_ascii=False, separators=(",", ":"))
     return "[]"
 
 
