@@ -154,7 +154,20 @@ Hair/
 
 ## 快速启动
 
-### 服务端
+### 一键启动 (推荐)
+
+```bash
+cp .env.example .env          # 配置环境变量 (编辑 API Key 等)
+./start.sh                    # 自动 venv → 安装依赖 → 初始化 DB → 启动
+./start.sh --seed             # 强制重新导入种子数据
+./start.sh --port 8080        # 自定义端口
+```
+
+启动后访问:
+- 管理后台: http://localhost:8000/admin (默认 key: `hair-admin-dev-2026`)
+- API 文档: http://localhost:8000/docs
+
+### 服务端 (手动)
 
 ```bash
 cd server

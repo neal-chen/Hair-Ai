@@ -22,7 +22,14 @@
       "Bash(curl -s 'http://localhost:8000/api/hairstyles?gender=女&version=0&device_id=admin')",
       "Bash(echo \"👩 女发: $\\(curl -s 'http://localhost:8000/api/hairstyles?gender=女&version=0&device_id=admin')",
       "Bash(git commit -m 'feat: add web admin panel for hairstyle/color library *)",
-      "Bash(git commit -m 'feat: add API authentication with Bearer token *)"
+      "Bash(git commit -m 'feat: add API authentication with Bearer token *)",
+      "Bash(mkdir -p /home/neo/.claude/projects/-home-neo-Hair/memory)",
+      "Bash(chmod +x /home/neo/Hair/start.sh)",
+      "Bash(./start.sh --help)",
+      "Bash(git commit -m 'chore: add quick-start setup scripts and env template *)"
+    ],
+    "additionalDirectories": [
+      "/home/neo/.claude/projects/-home-neo-Hair"
     ]
   }
 }
