@@ -105,6 +105,25 @@ td.actions { white-space: nowrap; }
 </head>
 <body>
 
+<!-- Login Overlay -->
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal" style="width:400px">
+    <div class="modal-header"><h3>🔐 管理后台登录</h3></div>
+    <div class="modal-body">
+      <p style="margin-bottom:16px;color:var(--muted);font-size:13px">请输入 API Key 进行验证</p>
+      <div class="form-group">
+        <label>API Key</label>
+        <input id="loginKey" type="password" placeholder="输入 API Key" style="font-family:monospace"
+               onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <div id="loginError" style="color:var(--danger);font-size:13px;display:none;margin-top:8px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="doLogin()" id="loginBtn">登录</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
 
 <!-- Sidebar -->
@@ -123,7 +142,10 @@ td.actions { white-space: nowrap; }
 <div class="main">
   <div class="header">
     <h1 id="pageTitle">概览</h1>
-    <span class="info" id="serverInfo">—</span>
+    <div>
+      <span class="info" id="serverInfo" style="margin-right:12px">—</span>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()" id="logoutBtn" style="display:none">退出</button>
+    </div>
   </div>
 
   <!-- Dashboard -->
@@ -217,12 +239,69 @@ td.actions { white-space: nowrap; }
 const API = { base: '', hairstyles: [], colors: [], categories: {} };
 let modalMode = ''; let modalId = '';
 
+// ── Auth ──
+function getToken() { return localStorage.getItem('admin_token'); }
+function isLoggedIn() { return !!getToken(); }
+
+function doLogin() {
+  const key = document.getElementById('loginKey').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  if (!key) { errEl.textContent = '请输入 API Key'; errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = '验证中...';
+  fetch(API.base + '/api/admin/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: key }),
+  }).then(r => r.json()).then(d => {
+    if (d.success) {
+      localStorage.setItem('admin_token', key);
+      document.getElementById('loginOverlay').classList.remove('active');
+      document.getElementById('logoutBtn').style.display = '';
+      loadDashboard();
+    } else {
+      errEl.textContent = 'API Key 无效';
+      errEl.style.display = 'block';
+    }
+  }).catch(e => {
+    errEl.textContent = '连接服务器失败: ' + e.message;
+    errEl.style.display = 'block';
+  }).finally(() => {
+    btn.disabled = false; btn.textContent = '登录';
+  });
+}
+
+function doLogout() {
+  localStorage.removeItem('admin_token');
+  document.getElementById('loginOverlay').classList.add('active');
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('loginKey').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function checkAuth() {
+  if (!isLoggedIn()) {
+    document.getElementById('loginOverlay').classList.add('active');
+    return false;
+  }
+  document.getElementById('loginOverlay').classList.remove('active');
+  document.getElementById('logoutBtn').style.display = '';
+  return true;
+}
+
 // ── API Helpers ──
+function authHeaders() {
+  const token = getToken();
+  return token ? { 'Authorization': 'Bearer ' + token } : {};
+}
+
 async function api(path, opts = {}) {
   const res = await fetch(API.base + path, {
-    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    headers: { 'Content-Type': 'application/json', ...authHeaders(), ...opts.headers },
     ...opts,
   });
+  if (res.status === 401 || res.status === 403) { doLogout(); throw new Error('认证已过期，请重新登录'); }
   const data = await res.json();
   if (!data.success && !opts.noThrow) throw new Error(data.detail || '请求失败');
   return data;
@@ -230,7 +309,10 @@ async function api(path, opts = {}) {
 
 async function uploadImage(type, id, file) {
   const fd = new FormData(); fd.append('file', file);
-  const res = await fetch(`${API.base}/api/${type}/${id}/image`, { method: 'POST', body: fd });
+  const res = await fetch(`${API.base}/api/${type}/${id}/image`, {
+    method: 'POST', body: fd, headers: authHeaders(),
+  });
+  if (res.status === 401 || res.status === 403) { doLogout(); throw new Error('认证已过期'); }
   return res.json();
 }
 
@@ -587,7 +669,8 @@ document.getElementById('modal').addEventListener('click', (e) => {
   } catch (e) {
     document.getElementById('serverInfo').textContent = '⚠️ 无法连接服务器';
   }
-  loadDashboard();
+  checkAuth();
+  if (isLoggedIn()) loadDashboard();
 })();
 </script>
 </body>

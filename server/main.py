@@ -17,6 +17,7 @@ from sqlalchemy import func, or_
 
 from database import get_db, init_db
 from models import Hairstyle, HairColor, DeviceSyncLog
+from auth import require_admin, ADMIN_API_KEY
 from schemas import (
     HairstyleCreate, HairstyleUpdate, HairstyleOut,
     HairColorCreate, HairColorUpdate, HairColorOut,
@@ -134,7 +135,7 @@ def get_hairstyle(item_id: str, db: Session = Depends(get_db)):
 
 
 @app.post("/api/hairstyles")
-def create_hairstyle(data: HairstyleCreate, db: Session = Depends(get_db)):
+def create_hairstyle(data: HairstyleCreate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """新增发型（管理后台用）"""
     import uuid
     now = datetime.now(timezone.utc)
@@ -162,7 +163,7 @@ def create_hairstyle(data: HairstyleCreate, db: Session = Depends(get_db)):
 
 
 @app.put("/api/hairstyles/{item_id}")
-def update_hairstyle(item_id: str, data: HairstyleUpdate, db: Session = Depends(get_db)):
+def update_hairstyle(item_id: str, data: HairstyleUpdate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """更新发型（管理后台用）"""
     item = db.query(Hairstyle).filter(Hairstyle.id == item_id).first()
     if not item:
@@ -181,7 +182,7 @@ def update_hairstyle(item_id: str, data: HairstyleUpdate, db: Session = Depends(
 
 
 @app.delete("/api/hairstyles/{item_id}")
-def delete_hairstyle(item_id: str, db: Session = Depends(get_db)):
+def delete_hairstyle(item_id: str, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """软删除发型（管理后台用）"""
     item = db.query(Hairstyle).filter(Hairstyle.id == item_id).first()
     if not item:
@@ -249,7 +250,7 @@ def get_hair_color(item_id: str, db: Session = Depends(get_db)):
 
 
 @app.post("/api/hair-colors")
-def create_hair_color(data: HairColorCreate, db: Session = Depends(get_db)):
+def create_hair_color(data: HairColorCreate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """新增发色（管理后台用）"""
     import uuid
     now = datetime.now(timezone.utc)
@@ -275,7 +276,7 @@ def create_hair_color(data: HairColorCreate, db: Session = Depends(get_db)):
 
 
 @app.put("/api/hair-colors/{item_id}")
-def update_hair_color(item_id: str, data: HairColorUpdate, db: Session = Depends(get_db)):
+def update_hair_color(item_id: str, data: HairColorUpdate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """更新发色（管理后台用）"""
     item = db.query(HairColor).filter(HairColor.id == item_id).first()
     if not item:
@@ -294,7 +295,7 @@ def update_hair_color(item_id: str, data: HairColorUpdate, db: Session = Depends
 
 
 @app.delete("/api/hair-colors/{item_id}")
-def delete_hair_color(item_id: str, db: Session = Depends(get_db)):
+def delete_hair_color(item_id: str, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """软删除发色（管理后台用）"""
     item = db.query(HairColor).filter(HairColor.id == item_id).first()
     if not item:
@@ -349,7 +350,7 @@ def get_hair_color_image(item_id: str, db: Session = Depends(get_db)):
 
 
 @app.post("/api/hairstyles/{item_id}/image")
-async def upload_hairstyle_image(item_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def upload_hairstyle_image(item_id: str, file: UploadFile = File(...), db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """上传发型图片（管理后台用）"""
     item = db.query(Hairstyle).filter(Hairstyle.id == item_id).first()
     if not item:
@@ -371,7 +372,7 @@ async def upload_hairstyle_image(item_id: str, file: UploadFile = File(...), db:
 
 
 @app.post("/api/hair-colors/{item_id}/image")
-async def upload_hair_color_image(item_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def upload_hair_color_image(item_id: str, file: UploadFile = File(...), db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """上传发色图片（管理后台用）"""
     item = db.query(HairColor).filter(HairColor.id == item_id).first()
     if not item:
@@ -430,7 +431,7 @@ def report_sync(data: SyncRequest, db: Session = Depends(get_db)):
 # ═══════════════════════════════════════════════════════════
 
 @app.get("/api/admin/stats")
-def get_stats(db: Session = Depends(get_db)):
+def get_stats(db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """运营统计"""
     hairstyle_count = db.query(Hairstyle).filter(Hairstyle.is_active == True).count()
     color_count = db.query(HairColor).filter(HairColor.is_active == True).count()
@@ -476,7 +477,7 @@ def get_stats(db: Session = Depends(get_db)):
 
 
 @app.get("/api/admin/devices")
-def list_devices(db: Session = Depends(get_db)):
+def list_devices(db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """查看所有已注册终端"""
     devices = db.query(DeviceSyncLog).order_by(DeviceSyncLog.last_sync_at.desc()).all()
     return {
@@ -485,6 +486,17 @@ def list_devices(db: Session = Depends(get_db)):
             "devices": [d.to_dict() for d in devices]
         }
     }
+
+
+# ── 管理后台认证 ──
+
+@app.post("/api/admin/login")
+def admin_login(body: dict):
+    """管理后台登录验证"""
+    key = body.get("api_key", "")
+    if key == ADMIN_API_KEY:
+        return {"success": True, "data": {"token": key, "message": "验证成功"}}
+    raise HTTPException(status_code=403, detail="API Key 无效")
 
 
 # ── 健康检查 ──

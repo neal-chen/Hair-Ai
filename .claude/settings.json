@@ -21,7 +21,8 @@
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} \" http://localhost:8000/admin)",
       "Bash(curl -s 'http://localhost:8000/api/hairstyles?gender=女&version=0&device_id=admin')",
       "Bash(echo \"👩 女发: $\\(curl -s 'http://localhost:8000/api/hairstyles?gender=女&version=0&device_id=admin')",
-      "Bash(git commit -m 'feat: add web admin panel for hairstyle/color library *)"
+      "Bash(git commit -m 'feat: add web admin panel for hairstyle/color library *)",
+      "Bash(git commit -m 'feat: add API authentication with Bearer token *)"
     ]
   }
 }
