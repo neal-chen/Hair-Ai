@@ -180,7 +180,9 @@ def list_hairstyles(
 @app.get("/api/hairstyles/{item_id}")
 def get_hairstyle(item_id: str, db: Session = Depends(get_db)):
     """获取单个发型详情"""
-    item = db.query(Hairstyle).filter(Hairstyle.id == item_id).first()
+    item = db.query(Hairstyle).filter(
+        Hairstyle.id == item_id, Hairstyle.is_active == True
+    ).first()
     if not item:
         raise HTTPException(status_code=404, detail="发型不存在")
     return {"success": True, "data": item.to_dict()}
@@ -300,7 +302,9 @@ def list_hair_colors(
 @app.get("/api/hair-colors/{item_id}")
 def get_hair_color(item_id: str, db: Session = Depends(get_db)):
     """获取单个发色详情"""
-    item = db.query(HairColor).filter(HairColor.id == item_id).first()
+    item = db.query(HairColor).filter(
+        HairColor.id == item_id, HairColor.is_active == True
+    ).first()
     if not item:
         raise HTTPException(status_code=404, detail="发色不存在")
     return {"success": True, "data": item.to_dict()}
