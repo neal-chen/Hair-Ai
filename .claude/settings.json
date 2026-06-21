@@ -90,7 +90,8 @@
       "Bash(venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8013)",
       "Bash(venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8015)",
       "Bash(ADMIN_API_KEY=hair-admin-dev-2026 bash test_api.sh http://localhost:8015)",
-      "Bash(git commit -m 'feat: add API regression test suite and soft-delete fix *)"
+      "Bash(git commit -m 'feat: add API regression test suite and soft-delete fix *)",
+      "Bash(git commit -m 'feat: add Docker support for easy deployment *)"
     ],
     "additionalDirectories": [
       "/home/neo/.claude/projects/-home-neo-Hair"

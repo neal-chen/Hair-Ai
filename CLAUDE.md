@@ -163,11 +163,26 @@ cp .env.example .env          # 配置环境变量 (编辑 API Key 等)
 ./start.sh --port 8080        # 自定义端口
 ```
 
+### Docker 部署
+
+```bash
+docker compose up -d           # 后台启动
+docker compose logs -f         # 查看日志
+docker compose down            # 停止
+```
+
+### 手动方式
+
+```bash
+cd server
+pip install -r requirements.txt
+python3 seed.py                # 首次运行
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
 启动后访问:
 - 管理后台: http://localhost:8000/admin (默认 key: `hair-admin-dev-2026`)
 - API 文档: http://localhost:8000/docs
-
-### 服务端 (手动)
 
 ```bash
 cd server

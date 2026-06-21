@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: hair-library-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ADMIN_API_KEY=${ADMIN_API_KEY:-hair-admin-dev-2026}
+      - TZ=Asia/Shanghai
+    volumes:
+      - hair_data:/data
+      - hair_images:/app/images
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  hair_data:
+    name: hair_library_data
+  hair_images:
+    name: hair_library_images
