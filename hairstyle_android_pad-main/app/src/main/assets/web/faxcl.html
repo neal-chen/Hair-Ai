@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Cache-Control" content="no-transform" />
+		<meta name="applicable-device" content="pc,mobile">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="width=750, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>AI发型生成</title>
+		<link rel="stylesheet" href="css/slicy.css" />
+		<link rel="stylesheet" href="css/swiper.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/responsive.css" />
+		<style>
+			.process-title {
+				font-size: 0.33rem;
+				color: #5D5D5D;
+				font-weight: 300;
+				margin-bottom: 0.2rem;
+			}
+			.preview-row {
+				display: flex;
+				gap: 0.2rem;
+				margin-bottom: 0.3rem;
+			}
+			.preview-item {
+				flex: 1;
+				background: #FDFDFD;
+				border-radius: 0.28rem;
+				padding: 0.14rem;
+			}
+			.preview-item img {
+				width: 100%;
+				height: auto;
+				border-radius: 0.21rem;
+				display: block;
+			}
+			.status-title {
+				font-weight: 400;
+				font-size: 0.47rem;
+				color: #000;
+				text-align: center;
+				margin: 0.3rem 0;
+				line-height: 1.6;
+			}
+			.step-list {
+				text-align: center;
+				padding: 0 0.5rem;
+			}
+			.step-item {
+				font-size: 0.28rem;
+				line-height: 0.58rem;
+				color: #999;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.1rem;
+			}
+			.step-item.active {
+				color: #666;
+			}
+			.step-item.completed {
+				color: #333;
+			}
+			.step-item .icon {
+				font-size: 0.32rem;
+			}
+			.step-item .check {
+				color: #E74C3C;
+				font-size: 0.32rem;
+			}
+			/* Loading动画 */
+			.loading-container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 0.5rem 0;
+			}
+			.loading-spinner {
+				width: 1rem;
+				height: 1rem;
+				border: 0.08rem solid rgba(165, 8, 7, 0.2);
+				border-top-color: #A50807;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+				to { transform: rotate(360deg); }
+			}
+			.loading-text {
+				font-size: 0.33rem;
+				color: #666;
+				margin-top: 0.3rem;
+			}
+			.cancel-btn {
+				width: 3.2rem;
+				line-height: 0.89rem;
+				background: url(images/hbt4.png) no-repeat center/contain;
+				font-weight: 400;
+				font-size: 0.28rem;
+				color: #000;
+				text-align: center;
+				margin: 0.4rem auto;
+				display: block;
+				border: none;
+				cursor: pointer;
+			}
+			/* 结果区域 */
+			.result-section {
+				display: none;
+			}
+			.result-title {
+				font-weight: 500;
+				font-size: 0.42rem;
+				color: #000;
+				text-align: center;
+				margin: 0.2rem 0 0.3rem;
+			}
+			.result-grid {
+				display: flex;
+				flex-wrap: wrap;
+				width: 4.42rem;
+				margin: 0 auto;
+				justify-content: space-between;
+			}
+			.result-item {
+				width: 2.14rem;
+				margin-bottom: 0.14rem;
+				position: relative;
+			}
+			.result-item a {
+				display: block;
+				padding: 0.09rem;
+				border-radius: 0.28rem;
+				background: rgba(0,0,0,0.1);
+				box-sizing: border-box;
+				position: relative;
+			}
+			.result-item img {
+				width: 100%;
+				height: auto;
+				display: block;
+				border-radius: 0.2rem;
+			}
+			.result-hint {
+				font-size: 0.28rem;
+				color: #999;
+				text-align: center;
+				margin-top: 0.3rem;
+			}
+			/* 图片预览弹窗 - 与faxin保持一致 */
+			.preview-modal {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(0,0,0,0.5);
+				backdrop-filter: blur(0.03rem);
+				-webkit-backdrop-filter: blur(0.03rem);
+				z-index: 99;
+			}
+			.preview-modal.show {
+				display: block;
+			}
+			.preview-modal-inner {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+			}
+			.preview-modal-content {
+				width: 5rem;
+				max-height: 6rem;
+				margin: 0 auto;
+				background: url(images/hbg3.png) no-repeat center/100% 100%;
+				padding: 0.14rem;
+				position: relative;
+				box-sizing: border-box;
+			}
+			.preview-modal-content .check-icon {
+				position: absolute;
+				top: 0.25rem;
+				right: 0.25rem;
+				width: 0.45rem;
+				height: 0.45rem;
+				background: #4CAF50;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #fff;
+				font-size: 0.28rem;
+				z-index: 10;
+			}
+			.preview-modal-img {
+				width: 100%;
+				max-height: 5.7rem;
+				object-fit: contain;
+				border-radius: 0.28rem;
+				display: block;
+			}
+			.preview-modal-hint {
+				color: #fff;
+				font-size: 0.24rem;
+				text-align: center;
+				margin-top: 0.2rem;
+				line-height: 1.4;
+			}
+			.preview-modal-buttons {
+				display: flex;
+				gap: 0.2rem;
+				margin-top: 0.28rem;
+				justify-content: center;
+			}
+			.preview-modal-btn {
+				width: 2.1rem;
+				line-height: 0.85rem;
+				font-size: 0.26rem;
+				text-align: center;
+				cursor: pointer;
+				border: none;
+				background: rgba(255,255,255,0.7);
+				backdrop-filter: blur(0.1rem);
+				-webkit-backdrop-filter: blur(0.1rem);
+				border-radius: 0.43rem;
+				color: #000;
+				white-space: nowrap;
+			}
+			.preview-modal-close {
+				width: 0.89rem;
+				margin: 0.2rem auto 0;
+				cursor: pointer;
+			}
+			.preview-modal-close img {
+				width: 100%;
+				display: block;
+			}
+			/* 左右切换箭头 */
+			.preview-nav-arrow {
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				width: 0.64rem;
+				height: 0.64rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				z-index: 10;
+			}
+			.preview-nav-arrow.prev {
+				left: 0.2rem;
+			}
+			.preview-nav-arrow.next {
+				right: 0.2rem;
+			}
+			.preview-nav-arrow img {
+				width: 100%;
+				height: 100%;
+				object-fit: contain;
+			}
+			.preview-nav-arrow.next img {
+				transform: rotate(180deg);
+			}
+			.preview-nav-arrow.disabled {
+				opacity: 0.3;
+				pointer-events: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="layout">
+			<div class="section1">
+				<div class="htit">
+					<div class="icon">
+						<a href="javascript:history.back()"><img src="images/hprev.png" ></a>
+						<a href="home.html"><img src="images/hnext.png" ></a>
+					</div>
+					<div class="hrt">
+						<img src="images/hrt3.png" >
+					</div>
+				</div>
+
+				<div class="hmain">
+					<!-- 进度显示区域 -->
+					<div id="progressSection">
+						<h6 class="process-title">正在处理</h6>
+
+						<!-- 上方两张图片 -->
+						<div class="preview-row">
+							<div class="preview-item">
+								<img id="userPhoto" src="images/hpic.png" alt="用户照片">
+							</div>
+							<div class="preview-item">
+								<img id="stylePhoto" src="images/hpic2.png" alt="参考发型">
+							</div>
+						</div>
+
+						<!-- 状态标题 -->
+						<h2 class="status-title" id="statusTitle">loading...</h2>
+
+						<!-- Loading动画 -->
+						<div class="loading-container">
+							<div class="loading-spinner"></div>
+							<p class="loading-text">AI智能换发型中</p>
+						</div>
+
+						<!-- 取消按钮 -->
+						<button class="cancel-btn" id="cancelBtn">取消生成</button>
+					</div>
+
+					<!-- 结果展示区域 -->
+					<div class="result-section" id="resultSection">
+						<h6 class="process-title">完成</h6>
+
+						<!-- 上方两张图片 -->
+						<div class="preview-row">
+							<div class="preview-item">
+								<img id="userPhotoResult" src="images/hpic.png" alt="用户照片">
+							</div>
+							<div class="preview-item">
+								<img id="stylePhotoResult" src="images/hpic2.png" alt="参考发型">
+							</div>
+						</div>
+
+						<!-- 完成标题 -->
+						<h2 class="result-title">换发型完成！</h2>
+
+						<!-- 2x2 结果网格 -->
+						<div class="result-grid" id="resultGrid">
+							<!-- 结果图片会动态插入 -->
+						</div>
+
+						<!-- 底部提示 -->
+						<p class="result-hint">点击选择心仪的发型</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 图片预览弹窗 -->
+		<div class="preview-modal" id="previewModal">
+			<div class="preview-modal-inner">
+				<div class="preview-modal-content">
+					<!-- 左箭头 -->
+					<div class="preview-nav-arrow prev" id="prevArrow">
+						<img src="images/popup_prev.png" alt="上一张">
+					</div>
+					<!-- 右箭头 -->
+					<div class="preview-nav-arrow next" id="nextArrow">
+						<img src="images/popup_next.png" alt="下一张">
+					</div>
+					<div class="check-icon">✓</div>
+					<!-- 预览图片 -->
+					<img class="preview-modal-img" id="previewModalImg" src="" alt="预览">
+				</div>
+				<div class="preview-modal-hint">该效果需要调整头发塑形状态及色彩饱和度，请与发型师沟通确认。</div>
+				<div class="preview-modal-buttons">
+					<button class="preview-modal-btn" id="btnRegisterSave">注册并保存</button>
+					<button class="preview-modal-btn" id="btnChangeColor">换发色</button>
+					<button class="preview-modal-btn" id="btn3DView">3D展示</button>
+				</div>
+				<div class="preview-modal-close" id="closeModal">
+					<img src="images/close.png" alt="关闭">
+				</div>
+			</div>
+		</div>
+
+		<script src="js/jquery-3.5.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/android-bridge.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/script.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var pollInterval = null;
+			var selectedResultIndex = -1;
+			var resultUrls = [];
+			var resultBase64s = [];
+			var userImageBase64 = null;
+			var hairstyleImageBase64 = null;
+
+			$(function() {
+				loadPreviewImagesFromSession();
+				bindEvents();
+			});
+
+			function bindEvents() {
+				$('#cancelBtn').click(function() {
+					cancelGeneration();
+				});
+
+				$('#btnRegisterSave').click(function() {
+					if (selectedResultIndex >= 0) {
+						showToast('注册并保存功能开发中');
+					}
+				});
+
+				$('#btnChangeColor').click(function() {
+					if (selectedResultIndex >= 0 && resultBase64s[selectedResultIndex]) {
+						// 保存选中的结果图片到sessionStorage，用于换发色
+						try {
+							// 去掉data:image/jpeg;base64,前缀
+							var base64Data = resultBase64s[selectedResultIndex];
+							if (base64Data.indexOf(',') > -1) {
+								base64Data = base64Data.split(',')[1];
+							}
+
+							// 清除旧的发色相关数据
+							sessionStorage.removeItem('selected_color_base64');
+							sessionStorage.removeItem('selected_color_name');
+							// 设置标记，告诉page2.html需要为换发色创建新session
+							sessionStorage.setItem('need_new_color_session', 'true');
+
+							// 保存换发型结果图作为换发色的源图
+							sessionStorage.setItem('color_source_image', base64Data);
+
+							// 跳转到换发色页面
+							window.location.href = 'page2.html';
+						} catch (e) {
+							showToast('保存图片失败: ' + e.message);
+						}
+					}
+				});
+
+				$('#btn3DView').click(function() {
+					if (selectedResultIndex >= 0 && resultBase64s[selectedResultIndex]) {
+						// 保存选中的结果图片到sessionStorage，用于3D展示
+						try {
+							var base64Data = resultBase64s[selectedResultIndex];
+							if (base64Data.indexOf(',') > -1) {
+								base64Data = base64Data.split(',')[1];
+							}
+							sessionStorage.setItem('3d_source_image', base64Data);
+							// 跳转到3D展示页面
+							window.location.href = '3d.html';
+						} catch (e) {
+							showToast('保存图片失败: ' + e.message);
+						}
+					}
+				});
+
+				// 点击关闭按钮关闭弹窗
+				$('#closeModal').click(function() {
+					closePreviewModal();
+				});
+
+				// 左右箭头切换图片
+				$('#prevArrow').click(function() {
+					navigateImage(-1);
+				});
+
+				$('#nextArrow').click(function() {
+					navigateImage(1);
+				});
+			}
+
+			function loadPreviewImagesFromSession() {
+				var sessionId = getSessionId();
+				if (!sessionId) {
+					showError('会话未创建，请返回首页重试');
+					return;
+				}
+
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					// 从服务器获取会话状态，包含图片URL
+					AndroidBridge.getSessionStatus(sessionId)
+						.then(function(result) {
+							var baseUrl = 'https://web-production-bingli.up.railway.app';
+
+							// 加载用户照片
+							var userImageUrl = result.user_image_url;
+							if (!userImageUrl || userImageUrl === '') {
+								userImageUrl = baseUrl + '/api/image/' + sessionId + '/user?t=' + Date.now();
+							} else if (userImageUrl.startsWith('http://')) {
+								userImageUrl = userImageUrl.replace('http://', 'https://');
+							}
+
+							// 加载发型参考图
+							var hairstyleImageUrl = result.hairstyle_image_url;
+							if (!hairstyleImageUrl || hairstyleImageUrl === '') {
+								hairstyleImageUrl = baseUrl + '/api/image/' + sessionId + '/hairstyle?t=' + Date.now();
+							} else if (hairstyleImageUrl.startsWith('http://')) {
+								hairstyleImageUrl = hairstyleImageUrl.replace('http://', 'https://');
+							}
+
+							// 并行加载两张图片
+							loadImageWithBridge('userPhoto', userImageUrl);
+							loadImageWithBridge('stylePhoto', hairstyleImageUrl);
+
+							// 根据会话状态决定下一步操作
+							if (result.status === 'completed' && result.result_urls && result.result_urls.length > 0) {
+								// 已完成，直接显示结果
+								showResults(result.result_urls);
+							} else if (result.status === 'processing') {
+								// 处理中，继续轮询
+								pollStatus(sessionId);
+							} else {
+								// 其他状态（pending/failed），启动新的处理
+								startGeneration();
+							}
+						})
+						.catch(function(error) {
+							console.error('获取会话状态失败:', error);
+							// 获取失败时尝试开始生成
+							startGeneration();
+						});
+				} else {
+					showError('请在APP中使用此功能');
+				}
+			}
+
+			function loadImageWithBridge(elementId, url) {
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					var httpsUrl = url.startsWith('http://') ? url.replace('http://', 'https://') : url;
+					AndroidBridge.fetchImageAsBase64(httpsUrl)
+						.then(function(result) {
+							if (result.success && result.base64) {
+								var imgSrc = 'data:image/jpeg;base64,' + result.base64;
+								$('#' + elementId).attr('src', imgSrc);
+								// 保存base64供后续使用
+								if (elementId === 'userPhoto') {
+									userImageBase64 = result.base64;
+								} else if (elementId === 'stylePhoto') {
+									hairstyleImageBase64 = result.base64;
+								}
+							}
+						})
+						.catch(function(err) {
+							console.error('加载图片失败:', elementId, err);
+						});
+				} else {
+					$('#' + elementId).attr('src', url);
+				}
+			}
+
+			function getSessionId() {
+				if (window.AppState && window.AppState.sessionId) {
+					return window.AppState.sessionId;
+				}
+				try {
+					return sessionStorage.getItem('hairstyle_session_id');
+				} catch (e) {
+					return null;
+				}
+			}
+
+			function startGeneration() {
+				var sessionId = getSessionId();
+				if (!sessionId) {
+					showError('会话未创建，请返回首页重试');
+					return;
+				}
+
+				// 开始步骤动画
+				startStepAnimation();
+
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					AndroidBridge.startProcess(sessionId, 'hairstyle')
+						.then(function(result) {
+							pollStatus(sessionId);
+						})
+						.catch(function(error) {
+							showError('启动处理失败: ' + error);
+						});
+				} else {
+					showError('请在APP中使用此功能');
+				}
+			}
+
+			function startStepAnimation() {
+				// 第一步立即完成
+				completeStep(1);
+
+				// 8秒后完成第二步
+				setTimeout(function() {
+					activateStep(2);
+				}, 500);
+
+				setTimeout(function() {
+					completeStep(2);
+					activateStep(3);
+				}, 12000);
+			}
+
+			function activateStep(step) {
+				$('#step' + step).addClass('active');
+			}
+
+			function completeStep(step) {
+				$('#step' + step).removeClass('active').addClass('completed');
+				$('#check' + step).show();
+
+				var texts = {
+					1: '用户肤色分析完成',
+					2: '发型风格分析完成',
+					3: '新发型合成完成'
+				};
+				$('#stepText' + step).text(texts[step]);
+			}
+
+			function pollStatus(sessionId) {
+				pollInterval = setInterval(function() {
+					AndroidBridge.getSessionStatus(sessionId)
+						.then(function(result) {
+							if (result.status === 'completed' && result.result_urls && result.result_urls.length > 0) {
+								clearInterval(pollInterval);
+								pollInterval = null;
+								completeStep(3);
+								setTimeout(function() {
+									showResults(result.result_urls);
+								}, 500);
+							} else if (result.status === 'failed' || result.status === 'cancelled') {
+								clearInterval(pollInterval);
+								pollInterval = null;
+								showFailedDialog('生成失败，请重试');
+							}
+						})
+						.catch(function(error) {});
+				}, 3000);
+			}
+
+			function showResults(urls) {
+				resultUrls = urls;
+				$('#progressSection').hide();
+				$('#resultSection').show();
+
+				// 复制预览图片到结果区域
+				if (userImageBase64) {
+					$('#userPhotoResult').attr('src', 'data:image/jpeg;base64,' + userImageBase64);
+				} else {
+					$('#userPhotoResult').attr('src', $('#userPhoto').attr('src'));
+				}
+				if (hairstyleImageBase64) {
+					$('#stylePhotoResult').attr('src', 'data:image/jpeg;base64,' + hairstyleImageBase64);
+				} else {
+					$('#stylePhotoResult').attr('src', $('#stylePhoto').attr('src'));
+				}
+
+				var loadPromises = [];
+
+				urls.forEach(function(url, index) {
+					var httpsUrl = url.startsWith('http://') ? url.replace('http://', 'https://') : url;
+					var promise = AndroidBridge.fetchImageAsBase64(httpsUrl)
+						.then(function(result) {
+							if (result.success && result.base64) {
+								return {
+									index: index,
+									base64: result.base64,
+									src: 'data:image/jpeg;base64,' + result.base64
+								};
+							}
+							return null;
+						})
+						.catch(function() {
+							return null;
+						});
+					loadPromises.push(promise);
+				});
+
+				Promise.all(loadPromises).then(function(results) {
+					var html = '';
+					resultBase64s = [];
+
+					results.forEach(function(item) {
+						if (item) {
+							resultBase64s[item.index] = item.src;
+							html += '<div class="result-item" data-index="' + item.index + '">' +
+								'<a href="javascript:;">' +
+								'<img src="' + item.src + '" />' +
+								'</a></div>';
+						}
+					});
+					$('#resultGrid').html(html);
+
+					$('.result-item').click(function() {
+						var index = $(this).data('index');
+						openPreviewModal(index);
+					});
+				});
+			}
+
+			function openPreviewModal(index) {
+				selectedResultIndex = index;
+
+				// 加载结果图
+				if (resultBase64s[index]) {
+					$('#previewModalImg').attr('src', resultBase64s[index]);
+				}
+
+				updateArrowState();
+				$('#previewModal').addClass('show');
+			}
+
+			function navigateImage(direction) {
+				var newIndex = selectedResultIndex + direction;
+				// 检查新索引是否有效
+				if (newIndex >= 0 && newIndex < resultBase64s.length && resultBase64s[newIndex]) {
+					selectedResultIndex = newIndex;
+					$('#previewModalImg').attr('src', resultBase64s[newIndex]);
+					updateArrowState();
+				}
+			}
+
+			function updateArrowState() {
+				// 更新左箭头状态
+				if (selectedResultIndex <= 0) {
+					$('#prevArrow').addClass('disabled');
+				} else {
+					$('#prevArrow').removeClass('disabled');
+				}
+				// 更新右箭头状态
+				var maxIndex = resultBase64s.filter(function(item) { return item; }).length - 1;
+				if (selectedResultIndex >= maxIndex) {
+					$('#nextArrow').addClass('disabled');
+				} else {
+					$('#nextArrow').removeClass('disabled');
+				}
+			}
+
+			function closePreviewModal() {
+				$('#previewModal').removeClass('show');
+				selectedResultIndex = -1;
+			}
+
+			function cancelGeneration() {
+				if (pollInterval) {
+					clearInterval(pollInterval);
+					pollInterval = null;
+				}
+				var sessionId = getSessionId();
+				if (sessionId && typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					showToast('正在取消...');
+					AndroidBridge.cancelSession(sessionId)
+						.then(function(result) {
+							showToast('已取消');
+							window.location.href = 'home.html';
+						})
+						.catch(function(error) {
+							window.location.href = 'home.html';
+						});
+				} else {
+					window.location.href = 'home.html';
+				}
+			}
+
+			function showFailedDialog(message) {
+				$('#statusTitle').text('出错了');
+				showToast(message);
+				// 延迟一下让用户看到提示，然后返回首页
+				setTimeout(function() {
+					window.location.href = 'home.html';
+				}, 2000);
+			}
+
+			function showError(message) {
+				$('#statusTitle').text('出错了');
+				showToast(message);
+			}
+
+			function showToast(message) {
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					AndroidBridge.showToast(message);
+				} else {
+					alert(message);
+				}
+			}
+		</script>
+	</body>
+</html>

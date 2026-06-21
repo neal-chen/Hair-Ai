@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardResult"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 结果图片 -->
+        <ImageView
+            android:id="@+id/ivResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:minHeight="150dp"
+            tools:src="@drawable/ic_camera" />
+
+        <!-- 选中状态遮罩 -->
+        <View
+            android:id="@+id/selectedOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/selected_overlay"
+            android:visibility="gone" />
+
+        <!-- 选中勾选图标 -->
+        <ImageView
+            android:id="@+id/ivCheckIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_check"
+            android:tint="@color/white"
+            android:background="@drawable/rounded_circle_icon"
+            android:padding="6dp"
+            android:visibility="gone" />
+
+        <!-- 结果标签 -->
+        <TextView
+            android:id="@+id/tvResultLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="8dp"
+            android:background="@drawable/result_label_bg"
+            android:gravity="center"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:text="结果 1"
+            android:textColor="@color/morandi_warm_grey"
+            android:textSize="12sp" />
+    </FrameLayout>
+</androidx.cardview.widget.CardView>

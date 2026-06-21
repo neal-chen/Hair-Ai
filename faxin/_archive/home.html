@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Cache-Control" content="no-transform" />
+		<meta name="applicable-device" content="pc,mobile">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+		<link rel="stylesheet" href="css/slicy.css" />
+		<link rel="stylesheet" href="css/swiper.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+
+	<body>
+		
+		<div class="layout">
+			<div class="section1">
+				<div class="htit">
+					<div class="icon">
+						<a href="#"><img src="images/hprev.png" ></a>
+						<a href="#"><img src="images/hnext.png" ></a>
+					</div>
+					<div class="hrt">
+						<img src="images/hrt.png" >
+					</div>
+				</div>
+				<div class="hmain">
+					<h6>上传照片</h6>
+					<h4 class="wshow">请上传一张您的清晰正脸照</h4>
+					<h4 class="whide">请选择开始换发型或开始换发色</h4>
+					<div class="hpic">
+						<img id="pics" src="images/hpic.png" >
+						<div class="bflex">
+							<div class="icon">
+								<img src="images/hxj.png" >
+								<input 
+								  type="file" 
+								  class="file" 
+								  name="" 
+								  id="photoUpload" 
+								  value=""
+								  accept="image/*"  
+								  capture="camera"  
+								  multiple="false"  
+								/>
+							</div>
+							<div class="icon weixtc">
+								<img src="images/hwx.png" >
+							</div>
+						</div>
+					</div>
+					<div class="whide">
+						<div class="flexbtn">
+							<a href="page1.html">换发型</a>
+							<a href="page2.html">换发色</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="mask">
+				<div class="flexcent">
+					<div class="wtanc">
+						<img src="images/weix.png" >
+						<h5>扫码上传您的照片</h5>
+					</div>
+					<div class="close">
+						<img src="images/close.png" >
+					</div>
+				</div>
+			</div>
+		</div>	
+		
+
+		<script src="js/jquery-3.5.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/script.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$('.weixtc').click(function(){
+				$('.mask').fadeIn();
+			})
+			$('.close').click(function(){
+				$('.mask').fadeOut();
+			})
+			
+			$('#photoUpload').on('change', function(e) {
+			            if (this.files && this.files.length > 0) {
+			                $('.wshow').hide();
+			                $('.whide').show();
+			                var file = this.files[0];
+			                var reader = new FileReader();
+			                reader.onload = function(e) {
+			                    $('#pics').attr('src', e.target.result); 
+			                };
+			                reader.readAsDataURL(file);
+			            }
+			        });
+		</script>
+		
+		
+		
+	</body>
+</html>

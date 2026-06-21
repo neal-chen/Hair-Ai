@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Cache-Control" content="no-transform" />
+		<meta name="applicable-device" content="pc,mobile">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="width=750, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+		<link rel="stylesheet" href="css/slicy.css" />
+		<link rel="stylesheet" href="css/swiper.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/responsive.css" />
+	</head>
+
+	<body>
+
+		<div class="layout">
+			<div class="section1">
+				<div class="htit">
+					<div class="icon">
+						<a href="javascript:history.back()"><img src="images/hprev.png" ></a>
+						<a href="javascript:history.forward()"><img src="images/hnext.png" ></a>
+					</div>
+					<div class="hrt">
+						<img src="images/hrt.png" >
+					</div>
+				</div>
+				<div class="hmain">
+					<h6>上传照片</h6>
+					<h4 class="wshow">请上传一张您的清晰正脸照</h4>
+					<h4 class="whide">请选择开始换发型或开始换发色</h4>
+					<div class="hpic">
+						<img id="pics" src="images/hpic.png" >
+						<div class="bflex">
+							<div class="icon" id="cameraBtn">
+								<img src="images/hxj.png" >
+							</div>
+							<div class="icon weixtc">
+								<img src="images/hwx.png" >
+							</div>
+						</div>
+					</div>
+					<div class="whide">
+						<div class="flexbtn">
+							<a href="page1.html">换发型</a>
+							<a href="page2.html">换发色</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="mask">
+				<div class="flexcent">
+					<div class="wtanc">
+						<img id="qrcodeImg" src="" >
+						<h5>扫码上传您的照片</h5>
+					</div>
+					<div class="close">
+						<img src="images/close.png" >
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<script src="js/jquery-3.5.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/android-bridge.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/script.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var qrSessionId = null;
+			var pollInterval = null;
+
+			$('.weixtc').click(function(){
+				// 生成二维码
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					AndroidBridge.generateUploadQRCode('user')
+						.then(function(result) {
+							qrSessionId = result.session_id;
+							$('#qrcodeImg').attr('src', 'data:image/png;base64,' + result.qrcode_base64);
+							$('.mask').fadeIn();
+							// 开始轮询上传状态
+							pollQRUploadStatus();
+						})
+						.catch(function(error) {
+							AndroidBridge.showToast('生成二维码失败: ' + error);
+						});
+				} else {
+					$('.mask').fadeIn();
+				}
+			});
+
+			$('.close').click(function(){
+				$('.mask').fadeOut();
+				qrSessionId = null;
+				if (pollInterval) {
+					clearInterval(pollInterval);
+					pollInterval = null;
+				}
+			});
+
+			// 轮询二维码上传状态
+			function pollQRUploadStatus() {
+				if (!qrSessionId) return;
+
+				pollInterval = setInterval(function() {
+					if (!qrSessionId) {
+						clearInterval(pollInterval);
+						pollInterval = null;
+						return;
+					}
+
+					AndroidBridge.getSessionStatus(qrSessionId)
+						.then(function(result) {
+							// 检查用户图片是否已上传
+							if (result.has_user_image) {
+								clearInterval(pollInterval);
+								pollInterval = null;
+								$('.mask').fadeOut();
+								AndroidBridge.showToast('照片上传成功！');
+								// 更新全局状态并保存到sessionStorage
+								if (window.AppState) {
+									window.AppState.sessionId = qrSessionId;
+								}
+								try {
+									sessionStorage.setItem('hairstyle_session_id', qrSessionId);
+								} catch (e) {}
+								// 显示上传的图片
+								var imageUrl;
+								if (result.user_image_url && result.user_image_url !== '') {
+									imageUrl = result.user_image_url;
+									// 确保使用HTTPS
+									if (imageUrl.startsWith('http://')) {
+										imageUrl = imageUrl.replace('http://', 'https://');
+									}
+								} else {
+									// 如果没有URL，尝试通过API构建图片URL
+									var baseUrl = 'https://web-production-bingli.up.railway.app';
+									imageUrl = baseUrl + '/api/image/' + qrSessionId + '/user?t=' + Date.now();
+								}
+
+								// 通过原生方法获取图片，避免跨域问题
+								AndroidBridge.fetchImageAsBase64(imageUrl)
+									.then(function(imgResult) {
+										if (imgResult.success && imgResult.base64) {
+											$('#pics').attr('src', 'data:image/jpeg;base64,' + imgResult.base64);
+										} else {
+											AndroidBridge.showToast('图片加载失败');
+										}
+									})
+									.catch(function(err) {
+										AndroidBridge.showToast('图片加载异常');
+									});
+								$('.wshow').hide();
+								$('.whide').show();
+							}
+						})
+						.catch(function(err) {
+							// 继续轮询
+						});
+				}, 2000);
+			}
+
+			// 相机按钮点击 - 直接调用原生相机
+			$('#cameraBtn').on('click', function() {
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					AndroidBridge.takePhoto('onPhotoTaken');
+				} else {
+					alert('请在Android设备上使用此功能');
+				}
+			});
+
+			// 拍照回调函数
+			window.onPhotoTaken = function(resultJson) {
+				try {
+					var result = typeof resultJson === 'string' ? JSON.parse(resultJson) : resultJson;
+					if (result.success && result.base64) {
+						var base64Data = 'data:image/jpeg;base64,' + result.base64;
+						$('#pics').attr('src', base64Data);
+
+						// 上传照片到服务器
+						var existingSessionId = null;
+						try {
+							existingSessionId = sessionStorage.getItem('hairstyle_session_id');
+						} catch (err) {}
+
+						if (existingSessionId) {
+							uploadUserPhoto(existingSessionId, base64Data);
+						} else {
+							AndroidBridge.createSession()
+								.then(function(sessionResult) {
+									var sessionId = sessionResult.session_id;
+									if (window.AppState) {
+										window.AppState.sessionId = sessionId;
+									}
+									try {
+										sessionStorage.setItem('hairstyle_session_id', sessionId);
+									} catch (err) {}
+									uploadUserPhoto(sessionId, base64Data);
+								})
+								.catch(function(error) {
+									AndroidBridge.showToast('创建会话失败: ' + error);
+								});
+						}
+					} else if (result.error) {
+						AndroidBridge.showToast(result.error);
+					}
+				} catch (e) {
+					console.error('处理拍照结果失败:', e);
+				}
+			};
+
+			// 上传用户照片到服务器
+			function uploadUserPhoto(sessionId, base64Data) {
+				// 提取纯base64数据（去掉data:image/...;base64,前缀）
+				var pureBase64 = base64Data;
+				if (base64Data.indexOf(',') > -1) {
+					pureBase64 = base64Data.split(',')[1];
+				}
+
+				AndroidBridge.uploadImage(sessionId, 'user', pureBase64)
+					.then(function(result) {
+						AndroidBridge.showToast('照片上传成功！');
+						$('.wshow').hide();
+						$('.whide').show();
+					})
+					.catch(function(error) {
+						AndroidBridge.showToast('照片上传失败: ' + error);
+					});
+			}
+		</script>
+
+
+
+	</body>
+</html>

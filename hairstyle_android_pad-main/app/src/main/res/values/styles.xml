@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 主题样式 -->
+    <style name="Theme.HairstyleGenerator" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/warm_taupe</item>
+        <item name="colorPrimaryVariant">@color/warm_grey</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/soft_grey</item>
+        <item name="colorSecondaryVariant">@color/morandi_sage</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <item name="android:colorBackground">@color/light_beige</item>
+        <item name="colorOnBackground">@color/medium_grey</item>
+
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/medium_grey</item>
+
+        <item name="android:statusBarColor">@color/light_beige</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- 欢迎页样式 -->
+    <style name="WelcomeTitle">
+        <item name="android:textSize">48sp</item>
+        <item name="android:textColor">@color/medium_grey</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="WelcomeSubtitle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/warm_grey</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+
+    <!-- 步骤标题样式 -->
+    <style name="StepTitle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="StepDescription">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/medium_grey</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <!-- 页面标题样式 -->
+    <style name="PageTitle">
+        <item name="android:textSize">36sp</item>
+        <item name="android:textColor">@color/medium_grey</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="PageSubtitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/warm_grey</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- 按钮样式 -->
+    <style name="PrimaryButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/warm_taupe</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+    </style>
+
+    <style name="SecondaryButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">@color/warm_taupe</item>
+        <item name="android:textColor">@color/warm_taupe</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+    </style>
+
+    <!-- 卡片样式 -->
+    <style name="CardStyle" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">8dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="cardBackgroundColor">@color/white</item>
+    </style>
+
+    <!-- 上传区域样式 -->
+    <style name="UploadArea">
+        <item name="android:background">@drawable/dashed_border</item>
+        <item name="android:layout_margin">16dp</item>
+        <item name="android:padding">48dp</item>
+    </style>
+
+    <!-- 生成结果图片样式 -->
+    <style name="ResultImage">
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">320dp</item>
+    </style>
+</resources>

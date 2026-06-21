@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Cache-Control" content="no-transform" />
+		<meta name="applicable-device" content="pc,mobile">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="width=750, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+		<link rel="stylesheet" href="css/slicy.css" />
+		<link rel="stylesheet" href="css/swiper.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/responsive.css" />
+	</head>
+
+	<body>
+
+		<div class="layout">
+			<div class="section1">
+				<div class="htit">
+					<div class="icon">
+						<a href="javascript:history.back()"><img src="images/hprev.png" ></a>
+						<a href="home.html"><img src="images/hnext.png" ></a>
+					</div>
+					<div class="hrt">
+						<img src="images/hrt2.png" >
+					</div>
+				</div>
+				<div class="hmain">
+					<h6>参考发型</h6>
+					<h4>为您的新造型选择一个灵感</h4>
+					<div class="hpic">
+						<img id="pics" src="images/hpic2.png" >
+						<div class="bflex">
+							<div class="icon" onclick="window.location.href='faxlist.html'" style="cursor:pointer;">
+								<img src="images/hfx.png" >
+							</div>
+							<div class="icon weixtc">
+								<img src="images/hwx.png" >
+							</div>
+						</div>
+					</div>
+					<div class="flexbtn">
+						<a href="faxlist.html" class="btn" id="toLibraryBtn">从发型库选择</a>
+						<a href="javascript:;" class="btn" id="startGenerateBtn" style="display:none;">开始生成</a>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="mask">
+				<div class="flexcent">
+					<div class="wtanc">
+						<img id="qrcodeImg" src="" >
+						<h5>扫码上传参考发型</h5>
+					</div>
+					<div class="close">
+						<img src="images/close.png" >
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<script src="js/jquery-3.5.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/android-bridge.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/script.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var qrSessionId = null;
+			var pollInterval = null;
+			var hairstyleUploaded = false;
+
+			function getSessionId() {
+				// 先从AppState获取
+				if (window.AppState && window.AppState.sessionId) {
+					return window.AppState.sessionId;
+				}
+				// 再从sessionStorage获取
+				try {
+					return sessionStorage.getItem('hairstyle_session_id');
+				} catch (e) {
+					return null;
+				}
+			}
+
+			// 显示/隐藏按钮
+			function updateButtons() {
+				if (hairstyleUploaded) {
+					$('#toLibraryBtn').hide();
+					$('#startGenerateBtn').show();
+				} else {
+					$('#toLibraryBtn').show();
+					$('#startGenerateBtn').hide();
+				}
+			}
+
+			// 页面加载时检查是否有从发型库选择的发型
+			$(function() {
+				checkSelectedHairstyle();
+			});
+
+			function checkSelectedHairstyle() {
+				try {
+					var selectedBase64 = sessionStorage.getItem('selected_hairstyle_base64');
+					if (selectedBase64) {
+						// 显示选中的发型图片
+						$('#pics').attr('src', 'data:image/jpeg;base64,' + selectedBase64);
+						// 标记发型已上传
+						hairstyleUploaded = true;
+						updateButtons();
+						// 清除sessionStorage中的临时数据
+						sessionStorage.removeItem('selected_hairstyle_base64');
+						sessionStorage.removeItem('selected_hairstyle_name');
+					}
+				} catch (e) {
+					console.error('检查选中发型失败:', e);
+				}
+			}
+
+			// 开始生成按钮点击事件
+			$('#startGenerateBtn').click(function() {
+				var sessionId = getSessionId();
+				if (!sessionId) {
+					if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+						AndroidBridge.showToast('会话未创建，请返回首页重试');
+					} else {
+						alert('会话未创建，请返回首页重试');
+					}
+					return;
+				}
+
+				// 跳转到处理页面
+				window.location.href = 'faxcl.html';
+			});
+
+			$('.weixtc').click(function(){
+				// 生成二维码
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					var existingSessionId = getSessionId();
+
+					if (existingSessionId) {
+						// 如果已有会话，复用该会话生成二维码
+						AndroidBridge.generateQRCodeForSession(existingSessionId, 'hairstyle')
+							.then(function(result) {
+								qrSessionId = result.session_id;
+								$('#qrcodeImg').attr('src', 'data:image/png;base64,' + result.qrcode_base64);
+								$('.mask').fadeIn();
+								// 开始轮询上传状态
+								pollQRUploadStatus();
+							})
+							.catch(function(error) {
+								AndroidBridge.showToast('生成二维码失败: ' + error);
+							});
+					} else {
+						// 如果没有会话，创建新会话
+						AndroidBridge.generateUploadQRCode('hairstyle')
+							.then(function(result) {
+								qrSessionId = result.session_id;
+								$('#qrcodeImg').attr('src', 'data:image/png;base64,' + result.qrcode_base64);
+								$('.mask').fadeIn();
+								// 开始轮询上传状态
+								pollQRUploadStatus();
+							})
+							.catch(function(error) {
+								AndroidBridge.showToast('生成二维码失败: ' + error);
+							});
+					}
+				} else {
+					$('.mask').fadeIn();
+				}
+			});
+
+			$('.close').click(function(){
+				$('.mask').fadeOut();
+				qrSessionId = null;
+				if (pollInterval) {
+					clearInterval(pollInterval);
+					pollInterval = null;
+				}
+			});
+
+			// 轮询二维码上传状态
+			function pollQRUploadStatus() {
+				if (!qrSessionId) return;
+
+				pollInterval = setInterval(function() {
+					if (!qrSessionId) {
+						clearInterval(pollInterval);
+						pollInterval = null;
+						return;
+					}
+
+					AndroidBridge.getSessionStatus(qrSessionId)
+						.then(function(result) {
+							console.log('Session status result:', JSON.stringify(result));
+							// 检查发型图片是否已上传
+							if (result.has_hairstyle_image) {
+								clearInterval(pollInterval);
+								pollInterval = null;
+								$('.mask').fadeOut();
+								AndroidBridge.showToast('参考发型上传成功！');
+								// 只有当sessionId不同时才更新（新会话的情况）
+								var currentSessionId = getSessionId();
+								if (!currentSessionId || currentSessionId !== qrSessionId) {
+									if (window.AppState) {
+										window.AppState.sessionId = qrSessionId;
+									}
+									try {
+										sessionStorage.setItem('hairstyle_session_id', qrSessionId);
+									} catch (e) {}
+								}
+								// 显示上传的发型图片
+								var imageUrl;
+								if (result.hairstyle_image_url && result.hairstyle_image_url !== '') {
+									imageUrl = result.hairstyle_image_url;
+									if (imageUrl.startsWith('http://')) {
+										imageUrl = imageUrl.replace('http://', 'https://');
+									}
+								} else {
+									// 如果没有URL，尝试通过API构建图片URL
+									var baseUrl = 'https://web-production-bingli.up.railway.app';
+									imageUrl = baseUrl + '/api/image/' + qrSessionId + '/hairstyle?t=' + Date.now();
+								}
+
+								// 通过原生方法获取图片，避免跨域问题
+								AndroidBridge.fetchImageAsBase64(imageUrl)
+									.then(function(imgResult) {
+										if (imgResult.success && imgResult.base64) {
+											$('#pics').attr('src', 'data:image/jpeg;base64,' + imgResult.base64);
+											// 标记发型已上传，显示开始生成按钮
+											hairstyleUploaded = true;
+											updateButtons();
+										} else {
+											AndroidBridge.showToast('图片加载失败');
+										}
+									})
+									.catch(function(err) {
+										AndroidBridge.showToast('图片加载异常');
+									});
+							}
+						})
+						.catch(function() {
+							// 继续轮询
+						});
+				}, 2000);
+			}
+
+			// 上传发型照片到服务器
+			function uploadHairstylePhoto(sessionId, base64Data) {
+				// 提取纯base64数据（去掉data:image/...;base64,前缀）
+				var pureBase64 = base64Data;
+				if (base64Data.indexOf(',') > -1) {
+					pureBase64 = base64Data.split(',')[1];
+				}
+
+				AndroidBridge.uploadImage(sessionId, 'hairstyle', pureBase64)
+					.then(function(result) {
+						AndroidBridge.showToast('发型照片上传成功！');
+						hairstyleUploaded = true;
+						updateButtons();
+					})
+					.catch(function(error) {
+						AndroidBridge.showToast('发型照片上传失败: ' + error);
+					});
+			}
+		</script>
+
+
+
+	</body>
+</html>

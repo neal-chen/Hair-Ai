@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_beige"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        tools:context=".ui.ResultsActivity">
+
+        <!-- 顶部标题栏 -->
+        <LinearLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="@drawable/ic_arrow_back"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/warm_taupe"
+                android:text="@string/back"
+                style="@style/SecondaryButton" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/results_title"
+                style="@style/PageTitle" />
+
+            <Button
+                android:id="@+id/btnRegenerate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableLeft="@drawable/ic_refresh"
+                android:drawablePadding="8dp"
+                android:text="@string/regenerate"
+                style="@style/PrimaryButton" />
+        </LinearLayout>
+
+        <!-- 原始图片区域 - 紧凑版 -->
+        <LinearLayout
+            android:id="@+id/originalImagesLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/headerLayout">
+
+            <!-- 原始照片 -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                style="@style/CardStyle">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="4dp"
+                        android:text="@string/original_photo"
+                        android:textColor="@color/morandi_warm_grey"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivOriginalPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/card_background"
+                        android:elevation="2dp"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        tools:src="@drawable/ic_camera" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 参考发型 -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                style="@style/CardStyle">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="4dp"
+                        android:text="@string/reference_hairstyle"
+                        android:textColor="@color/morandi_warm_grey"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivReferenceHairstyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/card_background"
+                        android:elevation="2dp"
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"
+                        tools:src="@drawable/ic_scissors" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <!-- 生成状态标题 -->
+        <TextView
+            android:id="@+id/tvGenerationStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="@string/ai_generating"
+            android:textColor="@color/medium_grey"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/originalImagesLayout" />
+
+        <!-- 加载状态 -->
+        <LinearLayout
+            android:id="@+id/loadingLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvGenerationStatus">
+
+            <!-- AI处理步骤提示 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="16dp">
+
+                <!-- 步骤1: 分析脸型/肤色 -->
+                <LinearLayout
+                    android:id="@+id/step1Layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <ProgressBar
+                        android:id="@+id/step1Progress"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/step1Check"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_check"
+                        android:visibility="gone"
+                        android:tint="@color/success_green" />
+
+                    <TextView
+                        android:id="@+id/tvStep1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="正在分析用户脸型..."
+                        android:textSize="16sp"
+                        android:textColor="@color/medium_grey" />
+                </LinearLayout>
+
+                <!-- 步骤2: 分析发型 -->
+                <LinearLayout
+                    android:id="@+id/step2Layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <ProgressBar
+                        android:id="@+id/step2Progress"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/step2Check"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_check"
+                        android:visibility="gone"
+                        android:tint="@color/success_green" />
+
+                    <TextView
+                        android:id="@+id/tvStep2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="正在分析发型风格..."
+                        android:textSize="16sp"
+                        android:textColor="@color/medium_grey"
+                        android:alpha="0.5" />
+                </LinearLayout>
+
+                <!-- 步骤3: AI合成 -->
+                <LinearLayout
+                    android:id="@+id/step3Layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <ProgressBar
+                        android:id="@+id/step3Progress"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/step3Check"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_check"
+                        android:visibility="gone"
+                        android:tint="@color/success_green" />
+
+                    <TextView
+                        android:id="@+id/tvStep3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="正在智能合成新发型..."
+                        android:textSize="16sp"
+                        android:textColor="@color/medium_grey"
+                        android:alpha="0.5" />
+                </LinearLayout>
+
+                <!-- 取消按钮 -->
+                <Button
+                    android:id="@+id/btnCancelGeneration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:drawableLeft="@drawable/ic_close"
+                    android:drawablePadding="8dp"
+                    android:paddingHorizontal="24dp"
+                    android:paddingVertical="8dp"
+                    android:text="取消生成"
+                    style="@style/SecondaryButton" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvLoadingCards"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:listitem="@layout/item_loading_card" />
+
+        </LinearLayout>
+
+        <!-- 生成结果 2x2 网格 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvResults"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvGenerationStatus"
+            tools:listitem="@layout/item_result_card" />
+
+        <!-- 选中图片后的操作按钮 -->
+        <LinearLayout
+            android:id="@+id/selectedActionsLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rvResults">
+
+            <Button
+                android:id="@+id/btnRegisterSave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:paddingVertical="12dp"
+                android:text="@string/register_save"
+                android:textSize="13sp"
+                style="@style/PrimaryButton" />
+
+            <Button
+                android:id="@+id/btnChangeColor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="4dp"
+                android:paddingVertical="12dp"
+                android:text="@string/change_color"
+                android:textSize="13sp"
+                style="@style/SecondaryButton" />
+
+            <Button
+                android:id="@+id/btn3DView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:paddingVertical="12dp"
+                android:text="@string/view_3d"
+                android:textSize="13sp"
+                style="@style/SecondaryButton" />
+        </LinearLayout>
+
+        <!-- 底部操作按钮 -->
+        <LinearLayout
+            android:id="@+id/bottomActionsLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/selectedActionsLayout">
+
+            <Button
+                android:id="@+id/btnRegenerateBottom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:drawableLeft="@drawable/ic_refresh"
+                android:drawablePadding="8dp"
+                android:paddingVertical="12dp"
+                android:text="@string/regenerate"
+                style="@style/PrimaryButton" />
+
+            <Button
+                android:id="@+id/btnBackEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:paddingVertical="12dp"
+                android:text="@string/back_edit"
+                style="@style/SecondaryButton" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

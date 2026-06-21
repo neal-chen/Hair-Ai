@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, width=2160" />
+  <title>AI 换发型 / 换发色</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div class="layout" id="main"></div>
+  </div>
+
+  <script src="js/state.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/colorwheel.js"></script>
+  <script src="js/carousel.js"></script>
+  <script src="js/pages.js"></script>
+  <script>
+    HairApp.router.register([
+      { path: '#/'       , render: HairApp.pages.login },
+      { path: '#/home'   , render: HairApp.pages.home },
+      { path: '#/page1'  , render: HairApp.pages.hairstyleRef },
+      { path: '#/page2'  , render: HairApp.pages.colorRef },
+      { path: '#/faxlist', render: HairApp.pages.hairstyleGallery },
+      { path: '#/faslist', render: HairApp.pages.colorGallery },
+      { path: '#/faxcl'  , render: HairApp.pages.hairstyleResult },
+      { path: '#/fascl'  , render: HairApp.pages.colorResult },
+    ])
+    HairApp.router.init()
+
+    // 桌面浏览器测试时自动缩放适配
+    ;(function() {
+      function fitScreen() {
+        if (window.innerWidth >= 2160) return  // 真机大屏，无需缩放
+        var layout = document.getElementById('main')
+        if (!layout) return
+        var scale = Math.min(1, window.innerWidth / 2160)
+        layout.style.transform = 'scale(' + scale + ')'
+        layout.style.transformOrigin = 'top center'
+        // 让 body 高度跟随缩放后的布局高度
+        var bodyH = 3840 * scale
+        document.body.style.minHeight = bodyH + 'px'
+        document.body.style.overflowX = 'hidden'
+      }
+      fitScreen()
+      window.addEventListener('resize', fitScreen)
+      // 每次页面切换后重新适配
+      document.addEventListener('route-change', fitScreen)
+    })()
+  </script>
+</body>
+</html>

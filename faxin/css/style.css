@@ -1,0 +1,651 @@
+/* ============================================
+   AI 换发型 / 换发色  —  55" 2160×3840 大屏
+   Base: 2160px design width, px units
+   Touch-optimized min target: ~70px
+   ============================================ */
+
+/* ─── Reset ─────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #DEDFE1;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a, button, input, select, textarea {
+  font-family: inherit;
+}
+img {
+  display: block;
+  max-width: 100%;
+}
+ul { list-style: none; }
+a { text-decoration: none; color: inherit; }
+
+/* ─── Layout ────────────────────────────────── */
+.layout {
+  width: 2160px;
+  min-height: 3840px;
+  margin: 0 auto;
+  background: #DEDFE1;
+  position: relative;
+  overflow: hidden;
+}
+/* 桌面小屏测试时缩放适配 */
+@media (max-width: 2160px) {
+  .layout { transform-origin: top center; }
+}
+
+.section1 { min-height: 3840px; }
+
+/* ─── Utility ────────────────────────────────── */
+.wshow { display: block; }
+.whide { display: none; }
+.whide1, .whide2, .whidese, .wshowcg, .wshowsand { display: none; }
+.txtcent { text-align: center !important; }
+
+/* ─── Login ──────────────────────────────────── */
+.login {
+  min-height: 3840px;
+  position: relative;
+}
+.login .bg {
+  width: 100%;
+  min-height: 3840px;
+  display: block;
+  object-fit: cover;
+}
+.login .hbtn {
+  width: 1600px;
+  height: auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 120px;
+  display: block;
+  cursor: pointer;
+}
+.login .hbtn img { width: 100%; }
+
+/* ─── Header ────────────────────────────────── */
+.htit {
+  padding: 50px 60px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.htit .icon { display: flex; align-items: center; gap: 20px; }
+.htit .icon a img {
+  width: 100px;
+  height: 100px;
+  display: block;
+  cursor: pointer;
+}
+.htit .hrt img { height: 100px; }
+
+/* ─── Main Content ──────────────────────────── */
+.hmain { padding: 20px 60px 80px; }
+.hmain h6 {
+  font-size: 42px;
+  color: #5D5D5D;
+  font-weight: 300;
+  line-height: 1.6;
+}
+.hmain > h4 {
+  font-weight: 400;
+  font-size: 52px;
+  color: #000;
+  line-height: 1.4;
+  margin-top: 20px;
+}
+
+/* ─── Photo Box ─────────────────────────────── */
+.hmain .hpic {
+  width: 1600px;
+  height: 1600px;
+  background: #FDFDFD;
+  border-radius: 80px;
+  margin: 60px auto 0;
+  padding: 30px;
+  position: relative;
+}
+.hmain .hpic > img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  border-radius: 50px;
+}
+.hmain .hpic .bflex {
+  position: absolute;
+  right: 40px;
+  bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 22;
+}
+.hmain .hpic .bflex .icon {
+  width: 130px;
+  height: 130px;
+  position: relative;
+}
+.hmain .hpic .bflex .icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0;
+}
+.hmain .hpic .bflex .icon .file {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* ─── Buttons ────────────────────────────────── */
+.flexbtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  gap: 30px;
+}
+.flexbtn a, .flexbtn .btn {
+  display: block;
+  width: 760px;
+  line-height: 140px;
+  font-size: 44px;
+  color: #000;
+  text-align: center;
+  background: url(../images/hbt4.png) no-repeat center / contain;
+  cursor: pointer;
+}
+.flexbtn .btn {
+  width: 100%;
+  background-image: url(../images/hbt3.png);
+}
+
+/* ─── Mask (modal overlay) ──────────────────── */
+.mask {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.mask > div { height: 100%; }
+.flexcent {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 60px;
+}
+
+/* ─── WeChat popup ──────────────────────────── */
+.wtanc {
+  width: 800px;
+  padding: 80px 60px 60px;
+  background: url(../images/hbg2.png) no-repeat center / 100% 100%;
+  text-align: center;
+}
+.wtanc img {
+  width: 340px;
+  height: 340px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+.wtanc h5 {
+  font-weight: 300;
+  font-size: 42px;
+  color: #000;
+  margin-top: 60px;
+  line-height: 1.4;
+}
+.close {
+  width: 130px;
+  margin: 30px auto 0;
+  cursor: pointer;
+}
+.close img { width: 100%; }
+
+/* ─── Search ────────────────────────────────── */
+.search {
+  width: 800px;
+  height: 100px;
+  background: url(../images/hsection.png) no-repeat center / contain;
+  padding: 0 50px;
+  display: flex;
+  align-items: center;
+}
+.search img {
+  width: 48px;
+  height: auto;
+  margin-right: 15px;
+}
+.search .txt {
+  font-size: 40px;
+  color: #000;
+  height: 100px;
+  border: none;
+  flex: 1;
+  background: none;
+  outline: none;
+}
+
+/* ─── Flex text row ─────────────────────────── */
+.flextxt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+.flextxt .rtc { display: flex; align-items: center; gap: 20px; }
+.flextxt .rtc img { height: 90px; }
+.flextxt .rtc .sex { cursor: pointer; }
+.flextxt .rtc .sex img:nth-child(2) { display: none; }
+.flextxt .rtc .sex.on img:nth-child(1) { display: none; }
+.flextxt .rtc .sex.on img:nth-child(2) { display: block; }
+
+/* ─── Tabs ──────────────────────────────────── */
+.htab ul {
+  display: flex;
+  gap: 60px;
+  margin-top: 40px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 8px;
+}
+.htab li { flex-shrink: 0; }
+.htab li a {
+  font-size: 44px;
+  color: #000;
+  line-height: 1.6;
+  display: block;
+  position: relative;
+  padding-bottom: 12px;
+  cursor: pointer;
+}
+.htab li a i {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 8px;
+  border-radius: 4px;
+  background: #A50807;
+  width: 0;
+  transition: width 0.3s;
+  margin: 0 auto;
+}
+.htab li.on a i { width: 100%; }
+.htab li.on a { color: #A50807; }
+
+/* ─── Gallery Grid ──────────────────────────── */
+.piclist { margin-top: 40px; }
+.piclist ul {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.piclist li {
+  background: #FDFDFD;
+  border-radius: 40px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.piclist li a {
+  display: block;
+  padding: 14px;
+}
+.piclist li .icon img {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  border-radius: 24px;
+  display: block;
+}
+.piclist li .flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10px 8px;
+}
+.piclist li h6 {
+  font-size: 28px;
+  color: #000;
+}
+.piclist li i {
+  font-size: 22px;
+  color: #A50807;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: rgba(165,8,7,0.05);
+}
+
+/* ─── Processing (before/after) ─────────────── */
+.huanse ul {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 40px;
+}
+.huanse ul li {
+  width: 720px;
+  height: 720px;
+  background: #FDFDFD;
+  border-radius: 80px;
+  padding: 30px;
+}
+.huanse ul li img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50px;
+}
+.hmain h2 {
+  font-size: 60px;
+  color: #000;
+  text-align: center;
+  margin-top: 30px;
+  line-height: 1.6;
+}
+
+/* ─── Status Carousel ──────────────────────── */
+.swiperlist {
+  overflow: hidden;
+  height: 260px;
+  position: relative;
+  margin-top: 20px;
+}
+.swiperlist::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(to bottom, rgba(222,223,225,0), rgba(222,223,225,0.8));
+  pointer-events: none;
+}
+.swiperlist ul {
+  display: flex;
+  flex-direction: column;
+}
+.swiperlist li {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: #000;
+}
+.swiperlist li i {
+  display: inline-block;
+  padding: 0 20px;
+}
+
+/* ─── Cancel button ─────────────────────────── */
+.qxbtn {
+  width: 760px;
+  line-height: 140px;
+  background: url(../images/hbt4.png) no-repeat center / contain;
+  font-size: 42px;
+  color: #000;
+  text-align: center;
+  margin: 60px auto;
+  cursor: pointer;
+}
+
+/* ─── Result (active img) ──────────────────── */
+.activeimg {
+  width: 900px;
+  height: 900px;
+  border-radius: 80px;
+  padding: 30px;
+  margin: 30px auto 0;
+  background: rgba(0,0,0,0.1);
+  position: relative;
+}
+.activeimg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50px;
+}
+.activeimg i {
+  font-size: 28px;
+  color: #3B3B3B;
+  position: absolute;
+  right: 50px;
+  bottom: 50px;
+}
+.activeimg.on i {
+  left: 50px;
+  font-size: 26px;
+  text-align: left;
+}
+.activeimg .mk {
+  position: absolute;
+  inset: 30px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.activeimg .mk img {
+  width: 100px;
+  height: 100px;
+  border-radius: 0;
+  object-fit: contain;
+}
+
+/* ─── Modal image ──────────────────────────── */
+.mpic {
+  width: 1400px;
+  max-height: 80vh;
+  padding: 30px;
+  background: url(../images/hbg3.png) no-repeat center / contain;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.mpic img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 40px;
+}
+.mpic i {
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  padding: 0 50px;
+  line-height: 90px;
+  background: url(../images/hbt5.png) no-repeat center / 100% 100%;
+  border-radius: 45px;
+  font-size: 40px;
+  color: #fff;
+}
+.mpic span {
+  font-size: 28px;
+  color: #3B3B3B;
+  position: absolute;
+  right: 50px;
+  bottom: 50px;
+  line-height: 1.4;
+}
+
+/* ─── Color Wheel ──────────────────────────── */
+.wbga {
+  background: #fff;
+  border-radius: 40px;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  padding: 40px 30px;
+}
+
+.color-wheel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.cw-canvas-wrap {
+  width: 700px;
+  height: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cw-canvas-wrap canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.cw-preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.cw-preview {
+  width: 160px;
+  height: 70px;
+  border-radius: 12px;
+  border: 3px solid rgba(0,0,0,0.15);
+}
+
+.cw-presets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+}
+.cw-swatch {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  border: 3px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.cw-swatch.active {
+  border-color: #999;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.15);
+}
+
+/* ─── Result Grid (faxpic) ─────────────────── */
+.faxpic ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 900px;
+  margin: 30px auto;
+}
+.faxpic ul li {
+  aspect-ratio: 1;
+}
+.faxpic ul li a {
+  display: block;
+  padding: 14px;
+  border-radius: 40px;
+  background: rgba(0,0,0,0.1);
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+}
+.faxpic ul li img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 26px;
+}
+.faxpic ul li .mk {
+  position: absolute;
+  inset: 14px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.faxpic ul li .mk img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  border-radius: 0;
+}
+
+/* ─── Image Carousel ────────────────────────── */
+.carousel {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  border-radius: 40px;
+}
+.carousel-wrapper {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+.carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+.carousel-slide img {
+  width: 100%;
+  display: block;
+  border-radius: 0 !important;
+}
+.carousel-prev,
+.carousel-next {
+  width: 50px;
+  height: 80px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 22;
+  cursor: pointer;
+  background: url(../images/prev1.png) no-repeat center / auto 100%;
+  left: 20px;
+}
+.carousel-next {
+  left: auto;
+  right: 20px;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* ─── Button variants ───────────────────────── */
+.flexbtn2 a { background-image: url(../images/hbt5.png); color: #fff; }
+.flexbtn3 a {
+  width: 340px;
+  background-image: url(../images/hbt6.png);
+  color: #fff;
+}
+.flexbtn3 { gap: 60px; }
+
+/* ─── 2160×3840-specific adjustments ───────── */
+@media (min-width: 2160px) {
+  .layout {
+    width: 100%;
+    max-width: 2160px;
+  }
+}

@@ -1,0 +1,32 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.venv/
+*.env
+
+# ── Server ──
+server/hair_library.db
+server/images/
+server/__pycache__/
+
+# ── Android ──
+hairstyle_android_pad-main/.gradle/
+hairstyle_android_pad-main/build/
+hairstyle_android_pad-main/app/build/
+hairstyle_android_pad-main/local.properties
+*.iml
+
+# ── IDE ──
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Large generated / cache ──
+*.tar.gz

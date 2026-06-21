@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Cache-Control" content="no-transform" />
+		<meta name="applicable-device" content="pc,mobile">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="width=750, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>换发色</title>
+		<link rel="stylesheet" href="css/slicy.css" />
+		<link rel="stylesheet" href="css/swiper.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/responsive.css" />
+		<style>
+			.fixed-colors {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				gap: 0.15rem;
+				margin: 0.3rem auto;
+				flex-wrap: wrap;
+				padding: 0 0.3rem;
+				max-width: 5rem;
+			}
+			.fixed-color-item {
+				width: 0.6rem;
+				height: 0.6rem;
+				border-radius: 50%;
+				border: 3px solid rgba(255,255,255,0.5);
+				cursor: pointer;
+				transition: all 0.2s;
+			}
+			.fixed-color-item:hover {
+				transform: scale(1.1);
+			}
+			.fixed-color-item.active {
+				border-color: #333;
+				box-shadow: 0 0 10px rgba(0,0,0,0.3);
+			}
+			.color-title {
+				font-size: 0.28rem;
+				color: #5D5D5D;
+				text-align: center;
+				margin: 0.2rem 0;
+			}
+			.selected-color-preview {
+				display: none;
+				margin: 0.2rem auto;
+				text-align: center;
+			}
+			.selected-color-preview .preview-box {
+				display: inline-block;
+				width: 1rem;
+				height: 1rem;
+				border-radius: 0.15rem;
+				border: 3px solid rgba(255,255,255,0.8);
+				box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+			}
+			.selected-color-preview .preview-label {
+				display: block;
+				font-size: 0.22rem;
+				color: #999;
+				margin-top: 0.1rem;
+			}
+			/* 自定义颜色按钮 */
+			.custom-color-btn {
+				display: inline-block;
+				padding: 0.15rem 0.4rem;
+				background: rgba(255,255,255,0.8);
+				border-radius: 0.3rem;
+				font-size: 0.26rem;
+				color: #666;
+				cursor: pointer;
+				margin-top: 0.2rem;
+			}
+			/* 色轮弹窗 */
+			.color-picker-modal {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(0,0,0,0.5);
+				backdrop-filter: blur(0.03rem);
+				-webkit-backdrop-filter: blur(0.03rem);
+				z-index: 100;
+			}
+			.color-picker-modal.show {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.color-picker-content {
+				width: 5.5rem;
+				background: #fff;
+				border-radius: 0.3rem;
+				padding: 0.3rem;
+				box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+			}
+			.picker-preview {
+				width: 0.8rem;
+				height: 0.5rem;
+				border-radius: 0.08rem;
+				margin-bottom: 0.2rem;
+				border: 1px solid #ddd;
+			}
+			.color-wheel-container {
+				position: relative;
+				width: 4rem;
+				height: 4rem;
+				margin: 0 auto 0.3rem;
+			}
+			.color-wheel {
+				width: 100%;
+				height: 100%;
+				border-radius: 50%;
+				cursor: crosshair;
+			}
+			.wheel-cursor {
+				position: absolute;
+				width: 0.3rem;
+				height: 0.3rem;
+				border: 3px solid #fff;
+				border-radius: 50%;
+				box-shadow: 0 0 5px rgba(0,0,0,0.5);
+				pointer-events: none;
+				transform: translate(-50%, -50%);
+			}
+			.picker-preset-colors {
+				display: flex;
+				justify-content: center;
+				gap: 0.12rem;
+				margin-bottom: 0.3rem;
+				flex-wrap: wrap;
+			}
+			.picker-preset-item {
+				width: 0.55rem;
+				height: 0.55rem;
+				border-radius: 0.08rem;
+				cursor: pointer;
+				border: 2px solid transparent;
+			}
+			.picker-preset-item.active {
+				border-color: #333;
+			}
+			.picker-buttons {
+				display: flex;
+				gap: 0.3rem;
+				justify-content: center;
+			}
+			.picker-btn {
+				flex: 1;
+				line-height: 0.85rem;
+				font-size: 0.3rem;
+				text-align: center;
+				border-radius: 0.43rem;
+				cursor: pointer;
+				border: none;
+			}
+			.picker-btn.cancel {
+				background: #e0e0e0;
+				color: #666;
+			}
+			.picker-btn.confirm {
+				background: #e0e0e0;
+				color: #666;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div class="layout">
+			<div class="section1">
+				<div class="htit">
+					<div class="icon">
+						<a href="javascript:history.back()"><img src="images/hprev.png" ></a>
+						<a href="home.html"><img src="images/hnext.png" ></a>
+					</div>
+					<div class="hrt">
+						<img src="images/hrt2.png" >
+					</div>
+				</div>
+				<div class="hmain">
+					<h6>参考发色</h6>
+					<h4>为您的新发色选择一个灵感</h4>
+					<div class="hpic">
+						<img id="pics" src="images/hpic2.png" >
+						<div class="bflex">
+							<div class="icon" onclick="window.location.href='faselib.html'" style="cursor:pointer;">
+								<img src="images/hfx.png" >
+							</div>
+							<div class="icon weixtc">
+								<img src="images/hwx.png" >
+							</div>
+						</div>
+					</div>
+
+					<!-- 选中颜色预览 -->
+					<div class="selected-color-preview" id="selectedColorPreview">
+						<div class="preview-box" id="selectedColorBox"></div>
+						<span class="preview-label">已选择颜色</span>
+					</div>
+
+					<div class="flexbtn">
+						<a href="faselib.html" class="btn" id="toLibraryBtn">从发色库选择</a>
+						<a href="javascript:;" class="btn" id="startGenerateBtn" style="display:none;">开始生成</a>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- 二维码弹窗 -->
+			<div class="mask">
+				<div class="flexcent">
+					<div class="wtanc">
+						<img id="qrcodeImg" src="" >
+						<h5>扫码上传参考发色</h5>
+					</div>
+					<div class="close">
+						<img src="images/close.png" >
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<script src="js/jquery-3.5.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/android-bridge.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/script.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var qrSessionId = null;
+			var pollInterval = null;
+			var colorUploaded = false;
+			var selectedColor = null;
+			var customImageBase64 = null;
+			var sourceImageBase64 = null;
+			var pickerSelectedColor = '#FF8C00';
+
+			function getSessionId() {
+				if (window.AppState && window.AppState.sessionId) {
+					return window.AppState.sessionId;
+				}
+				try {
+					return sessionStorage.getItem('hairstyle_session_id');
+				} catch (e) {
+					return null;
+				}
+			}
+
+			function updateButtons() {
+				if (colorUploaded || selectedColor || customImageBase64) {
+					$('#toLibraryBtn').hide();
+					$('#startGenerateBtn').show();
+				} else {
+					$('#toLibraryBtn').show();
+					$('#startGenerateBtn').hide();
+				}
+			}
+
+			$(function() {
+				loadSourceImage();
+				checkSelectedColor();
+				bindEvents();
+			});
+
+			function loadSourceImage() {
+				try {
+					sourceImageBase64 = sessionStorage.getItem('color_source_image');
+					if (sourceImageBase64) {
+						return;
+					}
+
+					var sessionId = getSessionId();
+					if (sessionId && typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+						AndroidBridge.getSessionStatus(sessionId)
+							.then(function(result) {
+								if (result.has_user_image) {
+									var imageUrl;
+									if (result.user_image_url && result.user_image_url !== '') {
+										imageUrl = result.user_image_url;
+										if (imageUrl.startsWith('http://')) {
+											imageUrl = imageUrl.replace('http://', 'https://');
+										}
+									} else {
+										var baseUrl = 'https://web-production-bingli.up.railway.app';
+										imageUrl = baseUrl + '/api/image/' + sessionId + '/user?t=' + Date.now();
+									}
+									return AndroidBridge.fetchImageAsBase64(imageUrl);
+								} else {
+									showToast('请先上传您的照片');
+									setTimeout(function() {
+										window.location.href = 'home.html';
+									}, 1500);
+									return Promise.reject('no user image');
+								}
+							})
+							.then(function(imgResult) {
+								if (imgResult && imgResult.success && imgResult.base64) {
+									sourceImageBase64 = imgResult.base64;
+								} else {
+									showToast('获取照片失败，请返回重试');
+								}
+							})
+							.catch(function(err) {
+								if (err !== 'no user image') {
+									showToast('加载照片失败');
+								}
+							});
+					} else {
+						showToast('请先上传您的照片');
+						setTimeout(function() {
+							window.location.href = 'home.html';
+						}, 1500);
+					}
+				} catch (e) {
+					showToast('加载原图失败');
+				}
+			}
+
+			function checkSelectedColor() {
+				try {
+					var selectedBase64 = sessionStorage.getItem('selected_color_base64');
+					if (selectedBase64) {
+						$('#pics').attr('src', 'data:image/jpeg;base64,' + selectedBase64);
+						customImageBase64 = selectedBase64;
+						colorUploaded = true;
+						updateButtons();
+						sessionStorage.removeItem('selected_color_base64');
+						sessionStorage.removeItem('selected_color_name');
+					}
+				} catch (e) {
+					console.error('检查选中发色失败:', e);
+				}
+			}
+
+			function bindEvents() {
+				// 二维码上传相关事件已在下方单独绑定
+			}
+
+			// 初始化色轮
+			function initColorWheel() {
+				var canvas = document.getElementById('colorWheel');
+				var ctx = canvas.getContext('2d');
+				var centerX = canvas.width / 2;
+				var centerY = canvas.height / 2;
+				var radius = Math.min(centerX, centerY) - 10;
+
+				// 绘制色轮
+				for (var angle = 0; angle < 360; angle++) {
+					var startAngle = (angle - 1) * Math.PI / 180;
+					var endAngle = (angle + 1) * Math.PI / 180;
+
+					ctx.beginPath();
+					ctx.moveTo(centerX, centerY);
+					ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+					ctx.closePath();
+
+					var gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+					gradient.addColorStop(0, 'white');
+					gradient.addColorStop(0.5, 'hsl(' + angle + ', 100%, 50%)');
+					gradient.addColorStop(1, 'hsl(' + angle + ', 100%, 25%)');
+					ctx.fillStyle = gradient;
+					ctx.fill();
+				}
+
+				// 点击/拖动选择颜色
+				var isDragging = false;
+
+				function getColorFromPosition(x, y) {
+					var rect = canvas.getBoundingClientRect();
+					var scaleX = canvas.width / rect.width;
+					var scaleY = canvas.height / rect.height;
+					var canvasX = (x - rect.left) * scaleX;
+					var canvasY = (y - rect.top) * scaleY;
+
+					var dx = canvasX - centerX;
+					var dy = canvasY - centerY;
+					var distance = Math.sqrt(dx * dx + dy * dy);
+
+					if (distance <= radius) {
+						var imageData = ctx.getImageData(canvasX, canvasY, 1, 1).data;
+						var color = 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ')';
+						return {
+							color: rgbToHex(imageData[0], imageData[1], imageData[2]),
+							x: (canvasX / canvas.width) * 100,
+							y: (canvasY / canvas.height) * 100
+						};
+					}
+					return null;
+				}
+
+				function handleColorSelect(e) {
+					var x, y;
+					if (e.touches) {
+						x = e.touches[0].clientX;
+						y = e.touches[0].clientY;
+					} else {
+						x = e.clientX;
+						y = e.clientY;
+					}
+
+					var result = getColorFromPosition(x, y);
+					if (result) {
+						pickerSelectedColor = result.color;
+						$('#pickerPreview').css('background', pickerSelectedColor);
+						$('.picker-preset-item').removeClass('active');
+						// 更新光标位置
+						$('#wheelCursor').css({
+							left: result.x + '%',
+							top: result.y + '%',
+							background: pickerSelectedColor
+						});
+					}
+				}
+
+				canvas.addEventListener('mousedown', function(e) {
+					isDragging = true;
+					handleColorSelect(e);
+				});
+
+				canvas.addEventListener('mousemove', function(e) {
+					if (isDragging) {
+						handleColorSelect(e);
+					}
+				});
+
+				canvas.addEventListener('mouseup', function() {
+					isDragging = false;
+				});
+
+				canvas.addEventListener('mouseleave', function() {
+					isDragging = false;
+				});
+
+				// 触摸事件
+				canvas.addEventListener('touchstart', function(e) {
+					e.preventDefault();
+					isDragging = true;
+					handleColorSelect(e);
+				});
+
+				canvas.addEventListener('touchmove', function(e) {
+					e.preventDefault();
+					if (isDragging) {
+						handleColorSelect(e);
+					}
+				});
+
+				canvas.addEventListener('touchend', function() {
+					isDragging = false;
+				});
+
+				// 初始化光标位置
+				$('#wheelCursor').css({
+					left: '75%',
+					top: '25%',
+					background: pickerSelectedColor
+				});
+			}
+
+			function rgbToHex(r, g, b) {
+				return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+			}
+
+			function updateMainImageWithColor(color) {
+				var canvas = document.createElement('canvas');
+				canvas.width = 256;
+				canvas.height = 256;
+				var ctx = canvas.getContext('2d');
+				ctx.fillStyle = color;
+				ctx.fillRect(0, 0, 256, 256);
+				var dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+				$('#pics').attr('src', dataUrl);
+			}
+
+			$('#startGenerateBtn').click(function() {
+				if (!sourceImageBase64) {
+					showToast('原图未加载，请返回重试');
+					return;
+				}
+				if (!selectedColor && !customImageBase64) {
+					showToast('请选择发色');
+					return;
+				}
+				startColorProcess();
+			});
+
+			function startColorProcess() {
+				if (typeof AndroidBridge === 'undefined' || !AndroidBridge.isAndroid()) {
+					showToast('请在APP中使用此功能');
+					return;
+				}
+
+				showToast('正在准备换发色...');
+
+				// 检查是否需要为换发色创建新session（从换发型结果页跳转过来）
+				var needNewSession = sessionStorage.getItem('need_new_color_session') === 'true';
+				if (needNewSession) {
+					sessionStorage.removeItem('need_new_color_session');
+					createNewSessionAndUpload();
+					return;
+				}
+
+				// 检查是否通过二维码上传已经准备好了会话（有user和hairstyle图片）
+				var existingSessionId = getSessionId();
+				if (colorUploaded && existingSessionId) {
+					// 二维码上传的情况，会话已经准备好，直接跳转
+					AndroidBridge.getSessionStatus(existingSessionId)
+						.then(function(result) {
+							if (result.has_user_image && result.has_hairstyle_image) {
+								// 会话已准备好，直接跳转
+								sessionStorage.setItem('process_type', 'haircolor');
+								window.location.href = 'faxse.html';
+							} else {
+								// 会话未准备好，需要重新上传
+								createNewSessionAndUpload();
+							}
+						})
+						.catch(function() {
+							// 获取状态失败，创建新会话
+							createNewSessionAndUpload();
+						});
+				} else {
+					// 没有通过二维码上传，需要创建新会话
+					createNewSessionAndUpload();
+				}
+			}
+
+			function createNewSessionAndUpload() {
+				AndroidBridge.createSession()
+					.then(function(result) {
+						var sessionId = result.session_id;
+						if (window.AppState) {
+							window.AppState.sessionId = sessionId;
+						}
+						try {
+							sessionStorage.setItem('hairstyle_session_id', sessionId);
+						} catch (e) {}
+
+						return AndroidBridge.uploadImage(sessionId, 'user', sourceImageBase64)
+							.then(function() {
+								if (customImageBase64) {
+									return AndroidBridge.uploadImage(sessionId, 'hairstyle', customImageBase64);
+								} else {
+									return generateColorImage(selectedColor)
+										.then(function(colorBase64) {
+											return AndroidBridge.uploadImage(sessionId, 'hairstyle', colorBase64);
+										});
+								}
+							})
+							.then(function() {
+								sessionStorage.setItem('process_type', 'haircolor');
+								window.location.href = 'faxse.html';
+							});
+					})
+					.catch(function(error) {
+						showToast('准备失败: ' + error);
+					});
+			}
+
+			function generateColorImage(color) {
+				return new Promise(function(resolve) {
+					var canvas = document.createElement('canvas');
+					canvas.width = 512;
+					canvas.height = 512;
+					var ctx = canvas.getContext('2d');
+					ctx.fillStyle = color;
+					ctx.fillRect(0, 0, 512, 512);
+					var dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+					var base64 = dataUrl.split(',')[1];
+					resolve(base64);
+				});
+			}
+
+			$('.weixtc').click(function(){
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					// 换发色流程：需要创建新会话，把换发型结果图作为user图片
+					// 然后让用户通过二维码上传发色参考图
+					if (sourceImageBase64) {
+						// 有换发型结果图，需要创建新会话并先上传结果图作为user图片
+						AndroidBridge.showToast('正在准备上传...');
+						AndroidBridge.createSession()
+							.then(function(result) {
+								var newSessionId = result.session_id;
+								// 先上传换发型结果图作为新会话的user图片
+								return AndroidBridge.uploadImage(newSessionId, 'user', sourceImageBase64)
+									.then(function() {
+										// 然后为新会话生成二维码，让用户上传发色参考图
+										return AndroidBridge.generateQRCodeForSession(newSessionId, 'hairstyle');
+									});
+							})
+							.then(function(result) {
+								qrSessionId = result.session_id;
+								// 更新当前会话ID为新会话
+								if (window.AppState) {
+									window.AppState.sessionId = qrSessionId;
+								}
+								try {
+									sessionStorage.setItem('hairstyle_session_id', qrSessionId);
+								} catch (e) {}
+								$('#qrcodeImg').attr('src', 'data:image/png;base64,' + result.qrcode_base64);
+								$('.mask').fadeIn();
+								pollQRUploadStatus();
+							})
+							.catch(function(error) {
+								AndroidBridge.showToast('生成二维码失败: ' + error);
+							});
+					} else {
+						// 没有换发型结果图（直接从首页进入换发色），使用原有逻辑
+						AndroidBridge.generateUploadQRCode('hairstyle')
+							.then(function(result) {
+								qrSessionId = result.session_id;
+								$('#qrcodeImg').attr('src', 'data:image/png;base64,' + result.qrcode_base64);
+								$('.mask').fadeIn();
+								pollQRUploadStatus();
+							})
+							.catch(function(error) {
+								AndroidBridge.showToast('生成二维码失败: ' + error);
+							});
+					}
+				} else {
+					$('.mask').fadeIn();
+				}
+			});
+
+			$('.close').click(function(){
+				$('.mask').fadeOut();
+				qrSessionId = null;
+				if (pollInterval) {
+					clearInterval(pollInterval);
+					pollInterval = null;
+				}
+			});
+
+			function pollQRUploadStatus() {
+				if (!qrSessionId) return;
+
+				pollInterval = setInterval(function() {
+					if (!qrSessionId) {
+						clearInterval(pollInterval);
+						pollInterval = null;
+						return;
+					}
+
+					AndroidBridge.getSessionStatus(qrSessionId)
+						.then(function(result) {
+							if (result.has_hairstyle_image) {
+								clearInterval(pollInterval);
+								pollInterval = null;
+								$('.mask').fadeOut();
+								AndroidBridge.showToast('参考发色上传成功！');
+								var currentSessionId = getSessionId();
+								if (!currentSessionId || currentSessionId !== qrSessionId) {
+									if (window.AppState) {
+										window.AppState.sessionId = qrSessionId;
+									}
+									try {
+										sessionStorage.setItem('hairstyle_session_id', qrSessionId);
+									} catch (e) {}
+								}
+								var imageUrl;
+								if (result.hairstyle_image_url && result.hairstyle_image_url !== '') {
+									imageUrl = result.hairstyle_image_url;
+									if (imageUrl.startsWith('http://')) {
+										imageUrl = imageUrl.replace('http://', 'https://');
+									}
+								} else {
+									var baseUrl = 'https://web-production-bingli.up.railway.app';
+									imageUrl = baseUrl + '/api/image/' + qrSessionId + '/hairstyle?t=' + Date.now();
+								}
+
+								AndroidBridge.fetchImageAsBase64(imageUrl)
+									.then(function(imgResult) {
+										if (imgResult.success && imgResult.base64) {
+											$('#pics').attr('src', 'data:image/jpeg;base64,' + imgResult.base64);
+											customImageBase64 = imgResult.base64;
+											selectedColor = null;
+											colorUploaded = true;
+											$('.fixed-color-item').removeClass('active');
+											$('#selectedColorPreview').hide();
+											updateButtons();
+										} else {
+											AndroidBridge.showToast('图片加载失败');
+										}
+									})
+									.catch(function(err) {
+										AndroidBridge.showToast('图片加载异常');
+									});
+							}
+						})
+						.catch(function() {});
+				}, 2000);
+			}
+
+			$('#photoUpload').on('change', function(e) {
+				if (this.files && this.files.length > 0) {
+					var file = this.files[0];
+					var reader = new FileReader();
+					reader.onload = function(e) {
+						var base64Data = e.target.result;
+						$('#pics').attr('src', base64Data);
+
+						if (base64Data.indexOf(',') > -1) {
+							customImageBase64 = base64Data.split(',')[1];
+						} else {
+							customImageBase64 = base64Data;
+						}
+						selectedColor = null;
+						colorUploaded = true;
+						$('.fixed-color-item').removeClass('active');
+						$('#selectedColorPreview').hide();
+						updateButtons();
+					};
+					reader.readAsDataURL(file);
+				}
+			});
+
+			function showToast(message) {
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					AndroidBridge.showToast(message);
+				} else {
+					alert(message);
+				}
+			}
+		</script>
+
+
+
+	</body>
+</html>

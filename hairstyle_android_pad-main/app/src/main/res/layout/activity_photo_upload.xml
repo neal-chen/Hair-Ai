@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_beige"
+    android:padding="16dp"
+    tools:context=".ui.PhotoUploadActivity">
+
+    <!-- 顶部标题区域 -->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- 返回按钮 -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back"
+            android:tint="@color/warm_taupe"
+            android:contentDescription="返回"
+            tools:ignore="UseAppTint" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/upload_title"
+                style="@style/PageTitle" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/upload_subtitle"
+                style="@style/PageSubtitle" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:drawableLeft="@drawable/ic_history"
+            android:drawablePadding="8dp"
+            android:text="历史记录"
+            style="@style/SecondaryButton" />
+    </LinearLayout>
+
+    <!-- 主内容区域 -->
+    <LinearLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintBottom_toTopOf="@+id/generateButtonsLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout">
+
+        <!-- 左侧：用户照片上传 -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            style="@style/CardStyle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="@string/user_photo_title"
+                    android:textColor="@color/medium_grey"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:text="@string/user_photo_desc"
+                    android:textColor="@color/warm_grey"
+                    android:textSize="16sp" />
+
+                <!-- 用户照片预览或上传区域 -->
+                <FrameLayout
+                    android:id="@+id/userPhotoContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <!-- 上传提示区域 -->
+                    <LinearLayout
+                        android:id="@+id/userUploadArea"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/dashed_border"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <FrameLayout
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_marginBottom="24dp"
+                            android:background="@drawable/rounded_circle_light">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_camera"
+                                android:tint="@color/warm_taupe"
+                                tools:ignore="UseAppTint" />
+                        </FrameLayout>
+
+                        <Button
+                            android:id="@+id/btnTakePhoto"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:drawableLeft="@drawable/ic_camera"
+                            android:drawablePadding="8dp"
+                            android:text="@string/take_photo"
+                            style="@style/PrimaryButton" />
+
+                        <Button
+                            android:id="@+id/btnScanUserPhoto"
+                            style="@style/SecondaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/ic_qr_code"
+                            android:drawablePadding="8dp"
+                            android:text="扫码上传"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <!-- 照片预览区域 -->
+                    <LinearLayout
+                        android:id="@+id/userPhotoPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/ivUserPhoto"
+                            android:layout_width="300dp"
+                            android:layout_height="300dp"
+                            android:layout_marginBottom="24dp"
+                            android:background="@drawable/card_background"
+                            android:elevation="4dp"
+                            android:scaleType="centerCrop"
+                            tools:src="@drawable/ic_camera" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/btnRetakePhoto"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="12dp"
+                                android:drawableLeft="@drawable/ic_refresh"
+                                android:drawablePadding="8dp"
+                                android:text="@string/re_upload"
+                                style="@style/SecondaryButton" />
+
+                            <Button
+                                android:id="@+id/btnRescanUserPhoto"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableLeft="@drawable/ic_qr_code"
+                                android:drawablePadding="8dp"
+                                android:text="@string/re_scan"
+                                style="@style/SecondaryButton" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </FrameLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 右侧：发型参考图选择 -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            style="@style/CardStyle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="@string/hairstyle_title"
+                    android:textColor="@color/medium_grey"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:text="@string/hairstyle_desc"
+                    android:textColor="@color/warm_grey"
+                    android:textSize="16sp" />
+
+                <!-- 发型图片预览或选择区域 -->
+                <FrameLayout
+                    android:id="@+id/hairstyleContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <!-- 选择提示区域 -->
+                    <LinearLayout
+                        android:id="@+id/hairstyleSelectArea"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/dashed_border"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <FrameLayout
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_marginBottom="24dp"
+                            android:background="@drawable/rounded_circle_light">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_upload"
+                                android:tint="@color/warm_taupe"
+                                tools:ignore="UseAppTint" />
+                        </FrameLayout>
+
+                        <Button
+                            android:id="@+id/btnSelectFromLibrary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:text="从发型库选择"
+                            android:textSize="16sp"
+                            style="@style/PrimaryButton" />
+
+
+                        <Button
+                            android:id="@+id/btnScanHairstyle"
+                            style="@style/SecondaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/ic_qr_code"
+                            android:drawablePadding="8dp"
+                            android:text="扫码上传"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <!-- 发型预览区域 -->
+                    <LinearLayout
+                        android:id="@+id/hairstylePreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/ivHairstyle"
+                            android:layout_width="300dp"
+                            android:layout_height="300dp"
+                            android:layout_marginBottom="24dp"
+                            android:background="@drawable/card_background"
+                            android:elevation="4dp"
+                            android:scaleType="centerCrop"
+                            tools:src="@drawable/ic_scissors" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/btnReselect"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="12dp"
+                                android:text="@string/re_select"
+                                style="@style/SecondaryButton" />
+
+                            <Button
+                                android:id="@+id/btnRescanHairstyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableLeft="@drawable/ic_qr_code"
+                                android:drawablePadding="8dp"
+                                android:text="@string/re_scan"
+                                style="@style/SecondaryButton" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </FrameLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <!-- 生成按钮区域 -->
+    <LinearLayout
+        android:id="@+id/generateButtonsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- 生成发型按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGenerate"
+            android:layout_width="0dp"
+            android:layout_height="72dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:enabled="false"
+            android:text="生成发型 →"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            style="@style/PrimaryButton" />
+
+        <!-- 换发色按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChangeColor"
+            android:layout_width="0dp"
+            android:layout_height="72dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:enabled="false"
+            android:text="换发色 🎨"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            style="@style/SecondaryButton" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

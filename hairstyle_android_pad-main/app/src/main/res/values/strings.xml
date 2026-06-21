@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AI发型生成器</string>
+
+    <!-- 欢迎页面 -->
+    <string name="welcome_title">找到您的完美发型</string>
+    <string name="welcome_subtitle">上传您的照片和参考发型以开始。</string>
+    <string name="welcome_step1_title">1. 您的照片</string>
+    <string name="welcome_step1_desc">从一张您自己的清晰照片开始。</string>
+    <string name="welcome_step2_title">2. 参考发型</string>
+    <string name="welcome_step2_desc">为您的新造型选择一个灵感。</string>
+    <string name="welcome_step3_title">3. AI生成</string>
+    <string name="welcome_step3_desc">获得个性化的发型效果。</string>
+    <string name="get_started">生成我的发型 →</string>
+
+    <!-- 照片上传页面 -->
+    <string name="upload_title">找到您的完美发型</string>
+    <string name="upload_subtitle">上传您的照片和参考发型以开始。</string>
+    <string name="user_photo_title">1. 您的照片</string>
+    <string name="user_photo_desc">从一张您自己的清晰照片开始。</string>
+    <string name="hairstyle_title">2. 参考发型</string>
+    <string name="hairstyle_desc">为您的新造型选择一个灵感。</string>
+
+    <!-- 按钮文本 -->
+    <string name="take_photo">拍照</string>
+    <string name="scan_qr_upload">扫码上传</string>
+    <string name="select_from_library">从图库中选择</string>
+    <string name="select_hairstyle_hint">请选择发型</string>
+    <string name="or">或</string>
+    <string name="re_upload">重新上传</string>
+    <string name="re_scan">重新扫码</string>
+    <string name="re_select">重新选择</string>
+    <string name="generate">生成我的发型 →</string>
+
+    <!-- 结果页面 -->
+    <string name="results_title">生成结果</string>
+    <string name="back">返回</string>
+    <string name="regenerate">重新生成</string>
+    <string name="original_photo">原始照片</string>
+    <string name="reference_hairstyle">参考发型</string>
+    <string name="ai_generating">AI正在生成中...</string>
+    <string name="generation_complete">生成完成</string>
+    <string name="generating">生成中...</string>
+    <string name="result_number">生成结果 %d</string>
+
+    <!-- 操作按钮 -->
+    <string name="download">下载</string>
+    <string name="share">分享</string>
+    <string name="favorite">收藏</string>
+    <string name="back_edit">返回编辑</string>
+    <string name="register_save">注册并保存</string>
+    <string name="change_color">换发色</string>
+    <string name="view_3d">3D展示</string>
+
+    <!-- 历史记录页面 -->
+    <string name="history_title">生成历史</string>
+    <string name="no_history">暂无历史记录</string>
+
+    <!-- 权限相关 -->
+    <string name="permission_camera_rationale">需要相机权限来拍照</string>
+    <string name="permission_storage_rationale">需要存储权限来保存图片</string>
+
+    <!-- 网络错误 -->
+    <string name="network_error">网络连接错误</string>
+    <string name="upload_failed">上传失败</string>
+    <string name="generation_failed">生成失败</string>
+    <string name="retry">重试</string>
+
+    <!-- 加载提示 -->
+    <string name="uploading">上传中...</string>
+    <string name="processing">处理中...</string>
+    <string name="please_wait">请稍候...</string>
+</resources>

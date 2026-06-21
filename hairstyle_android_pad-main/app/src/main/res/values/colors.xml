@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 基于Figma设计的莫兰迪配色方案 -->
+    <color name="warm_taupe">#c4b5a0</color>
+    <color name="warm_grey">#8a7f76</color>
+    <color name="soft_grey">#b0a79e</color>
+    <color name="light_beige">#f8f6f3</color>
+    <color name="medium_grey">#5a5a5a</color>
+    <color name="border_light">#e8e6e3</color>
+
+    <!-- 莫兰迪色调扩展 -->
+    <color name="morandi_dusty_pink">#d4c8c5</color>
+    <color name="morandi_sage">#9b9491</color>
+    <color name="morandi_warm_grey">#ebe7e4</color>
+
+    <!-- 系统颜色 -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- 功能色彩 -->
+    <color name="error_color">#d4183d</color>
+    <color name="success_color">#4CAF50</color>
+    <color name="success_green">#4CAF50</color>
+    <color name="warning_color">#FF9800</color>
+
+    <!-- 遮罩和阴影 -->
+    <color name="black_overlay">#80000000</color>
+    <color name="white_overlay">#80FFFFFF</color>
+
+    <!-- 按钮状态 -->
+    <color name="button_disabled">#CCCCCC</color>
+    <color name="button_disabled_text">#999999</color>
+
+    <!-- 发型库所需颜色 -->
+    <color name="primary">@color/warm_taupe</color>
+    <color name="primary_color">@color/warm_taupe</color>
+    <color name="background_light">@color/light_beige</color>
+    <color name="text_primary">@color/medium_grey</color>
+    <color name="text_secondary">@color/warm_grey</color>
+</resources>

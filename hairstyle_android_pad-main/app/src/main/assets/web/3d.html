@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Cache-Control" content="no-transform" />
+		<meta name="applicable-device" content="pc,mobile">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="width=750, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>3D展示</title>
+		<link rel="stylesheet" href="css/slicy.css" />
+		<link rel="stylesheet" href="css/swiper.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="css/responsive.css" />
+		<style>
+			.process-title {
+				font-size: 0.33rem;
+				color: #5D5D5D;
+				font-weight: 300;
+				margin-bottom: 0.2rem;
+			}
+			.preview-container {
+				width: 4rem;
+				margin: 0 auto 0.3rem;
+				background: #FDFDFD;
+				border-radius: 0.28rem;
+				padding: 0.14rem;
+			}
+			.preview-container img {
+				width: 100%;
+				height: auto;
+				border-radius: 0.21rem;
+				display: block;
+			}
+			.status-title {
+				font-weight: 400;
+				font-size: 0.47rem;
+				color: #000;
+				text-align: center;
+				margin: 0.3rem 0;
+				line-height: 1.6;
+			}
+			.step-list {
+				text-align: center;
+				padding: 0 0.5rem;
+			}
+			.step-item {
+				font-size: 0.28rem;
+				line-height: 0.58rem;
+				color: #999;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.1rem;
+			}
+			.step-item.active {
+				color: #666;
+			}
+			.step-item.completed {
+				color: #333;
+			}
+			.step-item .icon {
+				font-size: 0.32rem;
+			}
+			.step-item .check {
+				color: #E74C3C;
+				font-size: 0.32rem;
+			}
+			/* Loading动画 */
+			.loading-container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 0.5rem 0;
+			}
+			.loading-spinner {
+				width: 1rem;
+				height: 1rem;
+				border: 0.08rem solid rgba(165, 8, 7, 0.2);
+				border-top-color: #A50807;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+				to { transform: rotate(360deg); }
+			}
+			.loading-text {
+				font-size: 0.33rem;
+				color: #666;
+				margin-top: 0.3rem;
+			}
+			.cancel-btn {
+				width: 3.2rem;
+				line-height: 0.89rem;
+				background: url(images/hbt4.png) no-repeat center/contain;
+				font-weight: 400;
+				font-size: 0.28rem;
+				color: #000;
+				text-align: center;
+				margin: 0.4rem auto;
+				display: block;
+				border: none;
+				cursor: pointer;
+			}
+			/* 结果区域 */
+			.result-section {
+				display: none;
+			}
+			.result-title {
+				font-weight: 500;
+				font-size: 0.42rem;
+				color: #000;
+				text-align: center;
+				margin: 0.2rem 0 0.3rem;
+			}
+			.video-container {
+				width: 5rem;
+				margin: 0 auto;
+				background: #000;
+				border-radius: 0.28rem;
+				overflow: hidden;
+			}
+			.video-container video {
+				width: 100%;
+				height: auto;
+				display: block;
+			}
+			.result-buttons {
+				display: flex;
+				gap: 0.2rem;
+				margin-top: 0.3rem;
+				justify-content: center;
+			}
+			.result-btn {
+				width: 2.5rem;
+				line-height: 0.85rem;
+				font-size: 0.26rem;
+				text-align: center;
+				cursor: pointer;
+				border: none;
+				background: rgba(255,255,255,0.7);
+				backdrop-filter: blur(0.1rem);
+				-webkit-backdrop-filter: blur(0.1rem);
+				border-radius: 0.43rem;
+				color: #000;
+				white-space: nowrap;
+			}
+			.result-hint {
+				font-size: 0.28rem;
+				color: #999;
+				text-align: center;
+				margin-top: 0.3rem;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="layout">
+			<div class="section1">
+				<div class="htit">
+					<div class="icon">
+						<a href="javascript:history.back()"><img src="images/hprev.png" ></a>
+						<a href="home.html"><img src="images/hnext.png" ></a>
+					</div>
+					<div class="hrt">
+						<img src="images/hrt3.png" >
+					</div>
+				</div>
+
+				<div class="hmain">
+					<!-- 进度显示区域 -->
+					<div id="progressSection">
+						<h6 class="process-title">正在处理</h6>
+
+						<!-- 原图预览 -->
+						<div class="preview-container">
+							<img id="sourcePhoto" src="images/hpic.png" alt="原图">
+						</div>
+
+						<!-- 状态标题 -->
+						<h2 class="status-title" id="statusTitle">loading...</h2>
+
+						<!-- Loading动画 -->
+						<div class="loading-container">
+							<div class="loading-spinner"></div>
+							<p class="loading-text">AI 3D转换中</p>
+						</div>
+
+						<!-- 取消按钮 -->
+						<button class="cancel-btn" id="cancelBtn">取消生成</button>
+					</div>
+
+					<!-- 结果展示区域 -->
+					<div class="result-section" id="resultSection">
+						<h6 class="process-title">完成</h6>
+
+						<!-- 完成标题 -->
+						<h2 class="result-title">3D转换完成!</h2>
+
+						<!-- 视频播放器 -->
+						<div class="video-container">
+							<video id="resultVideo" controls autoplay loop playsinline>
+								您的浏览器不支持视频播放
+							</video>
+						</div>
+
+						<!-- 操作按钮 -->
+						<div class="result-buttons">
+							<button class="result-btn" id="btnSave">保存视频</button>
+							<button class="result-btn" id="btnBack">返回</button>
+						</div>
+
+						<!-- 底部提示 -->
+						<p class="result-hint">长按视频可保存到相册</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="js/jquery-3.5.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/android-bridge.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/script.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var pollInterval = null;
+			var sessionId = null;
+			var sourceImageBase64 = null;
+			var resultVideoUrl = null;
+
+			$(function() {
+				loadSourceImage();
+				bindEvents();
+			});
+
+			function bindEvents() {
+				$('#cancelBtn').click(function() {
+					cancelGeneration();
+				});
+
+				$('#btnSave').click(function() {
+					if (resultVideoUrl) {
+						showToast('保存功能开发中');
+					}
+				});
+
+				$('#btnBack').click(function() {
+					history.back();
+				});
+			}
+
+			function loadSourceImage() {
+				try {
+					sourceImageBase64 = sessionStorage.getItem('3d_source_image');
+					if (!sourceImageBase64) {
+						showError('未找到源图片，请返回重试');
+						return;
+					}
+
+					// 显示源图片
+					$('#sourcePhoto').attr('src', 'data:image/jpeg;base64,' + sourceImageBase64);
+
+					// 清除sessionStorage中的图片数据
+					sessionStorage.removeItem('3d_source_image');
+
+					// 开始3D处理
+					start3DProcess();
+				} catch (e) {
+					showError('加载图片失败: ' + e.message);
+				}
+			}
+
+			function start3DProcess() {
+				if (typeof AndroidBridge === 'undefined' || !AndroidBridge.isAndroid()) {
+					showError('请在APP中使用此功能');
+					return;
+				}
+
+				// 开始步骤动画
+				startStepAnimation();
+
+				// 创建新会话（使用独立的3D会话ID，不覆盖原换发型会话ID）
+				AndroidBridge.createSession()
+					.then(function(result) {
+						sessionId = result.session_id;
+						try {
+							sessionStorage.setItem('3d_session_id', sessionId);
+						} catch (e) {}
+
+						// 上传源图片作为user图片
+						return AndroidBridge.uploadImage(sessionId, 'user', sourceImageBase64);
+					})
+					.then(function() {
+						// 启动3D处理
+						return AndroidBridge.startProcess(sessionId, '3d');
+					})
+					.then(function() {
+						// 开始轮询状态
+						pollStatus();
+					})
+					.catch(function(error) {
+						showError('启动3D处理失败: ' + error);
+					});
+			}
+
+			function startStepAnimation() {
+				completeStep(1);
+
+				setTimeout(function() {
+					activateStep(2);
+				}, 500);
+
+				setTimeout(function() {
+					completeStep(2);
+					activateStep(3);
+				}, 15000);
+			}
+
+			function activateStep(step) {
+				$('#step' + step).addClass('active');
+			}
+
+			function completeStep(step) {
+				$('#step' + step).removeClass('active').addClass('completed');
+				$('#check' + step).show();
+
+				var texts = {
+					1: '图片分析完成',
+					2: '3D模型生成完成',
+					3: '视频渲染完成'
+				};
+				$('#stepText' + step).text(texts[step]);
+			}
+
+			function pollStatus() {
+				if (!sessionId) return;
+
+				pollInterval = setInterval(function() {
+					AndroidBridge.getSessionStatus(sessionId)
+						.then(function(result) {
+							if (result.status === 'completed' && result.result_urls && result.result_urls.length > 0) {
+								clearInterval(pollInterval);
+								pollInterval = null;
+								completeStep(3);
+								setTimeout(function() {
+									showResults(result.result_urls);
+								}, 500);
+							} else if (result.status === 'failed' || result.status === 'cancelled') {
+								clearInterval(pollInterval);
+								pollInterval = null;
+								showFailedDialog('3D转换失败，请重试');
+							}
+						})
+						.catch(function(error) {});
+				}, 3000);
+			}
+
+			function showResults(urls) {
+				$('#progressSection').hide();
+				$('#resultSection').show();
+
+				// 查找视频URL（通常是第一个结果）
+				if (urls.length > 0) {
+					resultVideoUrl = urls[0];
+					// 确保使用HTTPS
+					if (resultVideoUrl.startsWith('http://')) {
+						resultVideoUrl = resultVideoUrl.replace('http://', 'https://');
+					}
+					$('#resultVideo').attr('src', resultVideoUrl);
+				}
+			}
+
+			function cancelGeneration() {
+				if (pollInterval) {
+					clearInterval(pollInterval);
+					pollInterval = null;
+				}
+				if (sessionId && typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					showToast('正在取消...');
+					AndroidBridge.cancelSession(sessionId)
+						.then(function(result) {
+							showToast('已取消');
+							history.back();
+						})
+						.catch(function(error) {
+							history.back();
+						});
+				} else {
+					history.back();
+				}
+			}
+
+			function showFailedDialog(message) {
+				$('#statusTitle').text('出错了');
+				showToast(message);
+				// 延迟一下让用户看到提示，然后返回
+				setTimeout(function() {
+					history.back();
+				}, 2000);
+			}
+
+			function showError(message) {
+				$('#statusTitle').text('出错了');
+				showToast(message);
+			}
+
+			function showToast(message) {
+				if (typeof AndroidBridge !== 'undefined' && AndroidBridge.isAndroid()) {
+					AndroidBridge.showToast(message);
+				} else {
+					alert(message);
+				}
+			}
+		</script>
+	</body>
+</html>

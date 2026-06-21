@@ -1,0 +1,66 @@
+/* 大屏横屏设备适配样式 */
+@media only screen and (min-width:1001px) and (orientation: landscape) {
+	/* 确保布局居中且内容完整 */
+	.layout {
+		box-sizing: border-box;
+	}
+
+	/* 顶部标题栏适配 */
+	.htit {
+		padding: 0.4rem 0.3rem;
+	}
+
+	/* 确保步骤指示器图片完整显示 */
+	.htit .hrt img {
+		height: 0.7rem;
+	}
+
+	/* 搜索框适配 */
+	.search {
+		width: auto;
+		min-width: 4rem;
+	}
+
+	/* 发色/发型列表项适配 */
+	.piclist li {
+		width: calc((100% - 0.3rem) / 4);
+	}
+
+	.piclist li .icon img {
+		height: 1.2rem;
+	}
+}
+
+/* 中等大屏设备(1001px - 1919px)适配 */
+@media only screen and (min-width:1001px) and (max-width:1919px) and (orientation: landscape) {
+	.hmain .hpic {
+		width: 5.5rem;
+		height: 5.5rem;
+	}
+
+	.activeimg {
+		width: 3.6rem;
+		height: 3.6rem;
+	}
+}
+
+/* 超大屏幕(>=1920px)适配 */
+@media only screen and (min-width:1920px) and (orientation: landscape) {
+	.hmain .hpic {
+		width: 6rem;
+		height: 6rem;
+	}
+
+	.piclist li {
+		width: calc((100% - 0.45rem) / 5);
+	}
+
+	.piclist li .icon img {
+		height: 1.4rem;
+	}
+
+	.activeimg {
+		width: 4rem;
+		height: 4rem;
+	}
+}
