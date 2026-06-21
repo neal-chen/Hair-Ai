@@ -3,6 +3,7 @@
 提供 Bearer Token 认证依赖，保护管理端 API 端点。
 """
 
+import hmac
 import os
 from typing import Optional
 
@@ -38,7 +39,8 @@ def require_admin(authorization: Optional[str] = Header(None)):
             detail="认证方案不支持，仅支持 Bearer",
         )
 
-    if token != ADMIN_API_KEY:
+    # 使用恒定时间比较，防止时序攻击
+    if not hmac.compare_digest(token, ADMIN_API_KEY):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Token 无效",
