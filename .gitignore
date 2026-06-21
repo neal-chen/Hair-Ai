@@ -20,6 +20,7 @@ hairstyle_android_pad-main/local.properties
 
 # ── IDE ──
 .idea/
+.claude/
 *.swp
 *.swo
 *~

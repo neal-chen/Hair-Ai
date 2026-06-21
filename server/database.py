@@ -12,6 +12,9 @@ SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False},  # SQLite 多线程访问
+    pool_size=5,          # 连接池大小
+    max_overflow=10,      # 超过 pool_size 后最多创建数
+    pool_pre_ping=True,   # 使用前检查连接是否有效
     echo=False,
 )
 

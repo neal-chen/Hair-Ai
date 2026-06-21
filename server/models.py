@@ -1,7 +1,9 @@
 """SQLAlchemy 数据模型"""
 
+import json
 import uuid
 from datetime import datetime, timezone
+from typing import List
 
 from sqlalchemy import Column, String, Text, Integer, Boolean, BigInteger, DateTime
 from database import Base
@@ -12,6 +14,26 @@ def _uuid() -> str:
 
 
 def _now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def serialize_tags(tags) -> str:
+    """将 tags 序列化为 JSON 字符串"""
+    if isinstance(tags, str):
+        return tags
+    if isinstance(tags, (list, tuple)):
+        return json.dumps(tags, ensure_ascii=False)
+    return "[]"
+
+
+def deserialize_tags(tags_str: str) -> List[str]:
+    """将 JSON 字符串反序列化为列表"""
+    if not tags_str:
+        return []
+    try:
+        return json.loads(tags_str)
+    except (json.JSONDecodeError, TypeError):
+        return []
     return datetime.now(timezone.utc)
 
 

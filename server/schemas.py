@@ -1,7 +1,6 @@
-"""Pydantic 请求/响应模型"""
+"""Pydantic 请求/响应模型（仅保留实际使用的模型）"""
 
-from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -28,21 +27,6 @@ class HairstyleUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
-class HairstyleOut(BaseModel):
-    id: str
-    category: str
-    name: str
-    description: str
-    gender: str
-    tags: str
-    image_url: str
-    sort_order: int
-    is_active: bool
-    version: int
-
-    model_config = {"from_attributes": True}
-
-
 # ── 发色 ──
 
 class HairColorCreate(BaseModel):
@@ -64,20 +48,6 @@ class HairColorUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
-class HairColorOut(BaseModel):
-    id: str
-    category: str
-    name: str
-    procedure: str
-    color_hex: Optional[str]
-    image_url: str
-    sort_order: int
-    is_active: bool
-    version: int
-
-    model_config = {"from_attributes": True}
-
-
 # ── 同步 ──
 
 class SyncRequest(BaseModel):
@@ -85,42 +55,3 @@ class SyncRequest(BaseModel):
     device_name: Optional[str] = None
     hairstyle_version: int = 0
     color_version: int = 0
-
-
-class HairstyleSyncData(BaseModel):
-    id: str
-    category: str
-    name: str
-    description: str
-    gender: str
-    tags: str
-    image_url: str
-    sort_order: int
-    is_active: bool
-    version: int
-
-
-class HairColorSyncData(BaseModel):
-    id: str
-    category: str
-    name: str
-    procedure: str
-    color_hex: Optional[str]
-    image_url: str
-    sort_order: int
-    is_active: bool
-    version: int
-
-
-class SyncResponse(BaseModel):
-    success: bool
-    data: dict
-    message: str = ""
-
-
-# ── 通用 ──
-
-class ApiResponse(BaseModel):
-    success: bool
-    data: Optional[dict] = None
-    message: str = ""

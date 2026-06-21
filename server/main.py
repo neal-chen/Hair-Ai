@@ -3,7 +3,6 @@
 FastAPI 应用，提供发型库和发色库的查询、增量同步、图片服务接口。
 """
 
-import json
 import os
 import uuid
 from datetime import datetime, timezone
@@ -20,10 +19,13 @@ from database import get_db, init_db, SessionLocal
 from models import Hairstyle, HairColor, DeviceSyncLog
 from auth import require_admin, ADMIN_API_KEY
 from schemas import (
-    HairstyleCreate, HairstyleUpdate, HairstyleOut,
-    HairColorCreate, HairColorUpdate, HairColorOut,
+    HairstyleCreate, HairstyleUpdate,
+    HairColorCreate, HairColorUpdate,
     SyncRequest,
 )
+from log_config import setup_logging
+
+logger = setup_logging()
 
 # ── 应用初始化 ──
 
@@ -47,6 +49,8 @@ app.add_middleware(
 @app.exception_handler(HTTPException)
 def http_exception_handler(request, exc: HTTPException):
     """统一 HTTP 异常响应格式"""
+    logger.warning("HTTP %d: %s | %s %s", exc.status_code, exc.detail,
+                   request.method, request.url.path)
     return JSONResponse(
         status_code=exc.status_code,
         content={"success": False, "message": exc.detail},
@@ -55,7 +59,9 @@ def http_exception_handler(request, exc: HTTPException):
 
 @app.exception_handler(Exception)
 def general_exception_handler(request, exc: Exception):
-    """兜底异常处理（生产环境不暴露内部错误）"""
+    """兜底异常处理（记录日志，不暴露内部错误）"""
+    logger.exception("Unhandled exception: %s | %s %s",
+                     exc, request.method, request.url.path)
     return JSONResponse(
         status_code=500,
         content={"success": False, "message": "服务器内部错误"},
@@ -85,9 +91,10 @@ def root_redirect():
 
 @app.get("/favicon.ico", include_in_schema=False)
 def favicon():
-    return RedirectResponse(url="/static/admin/favicon.ico") if os.path.exists(
-        os.path.join(ADMIN_DIR, "favicon.ico")
-    ) else JSONResponse(status_code=204)
+    """返回一个简单的 SVG favicon"""
+    from fastapi.responses import Response
+    svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#6366f1"/><text x="16" y="23" text-anchor="middle" font-size="20" fill="white">💇</text></svg>'
+    return Response(content=svg, media_type="image/svg+xml")
 
 
 @app.on_event("startup")
@@ -112,7 +119,9 @@ def _auto_seed():
             from seed import seed_hair_colors
             seed_hair_colors()
     except ImportError:
-        pass  # seed.py 不存在时静默跳过
+        logger.info("seed.py 未找到，跳过种子数据导入")
+    except Exception as e:
+        logger.error("种子数据导入失败: %s", e)
     finally:
         db.close()
 
