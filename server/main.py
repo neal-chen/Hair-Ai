@@ -105,14 +105,14 @@ def _auto_seed():
 def list_hairstyles(
     gender: Optional[str] = Query(None, description="筛选性别：男/女"),
     category: Optional[str] = Query(None, description="筛选分类"),
+    q: Optional[str] = Query(None, description="搜索关键词（名称/描述）"),
     version: int = Query(0, description="客户端当前版本号，用于增量同步"),
     device_id: str = Query(..., description="终端设备标识"),
     db: Session = Depends(get_db),
 ):
-    """获取发型库列表（支持增量同步）"""
+    """获取发型库列表（支持增量同步 + 文本搜索）"""
     query = db.query(Hairstyle)
 
-    # 版本过滤：version=0 返回全部，>0 只返回更新的
     if version > 0:
         query = query.filter(Hairstyle.version > version)
     else:
@@ -122,6 +122,14 @@ def list_hairstyles(
         query = query.filter(Hairstyle.gender == gender)
     if category:
         query = query.filter(Hairstyle.category == category)
+    if q:
+        like = f"%{q}%"
+        query = query.filter(
+            Hairstyle.name.like(like)
+            | Hairstyle.description.like(like)
+            | Hairstyle.category.like(like)
+            | Hairstyle.tags.like(like)
+        )
 
     items = query.order_by(Hairstyle.sort_order).all()
 
@@ -224,11 +232,12 @@ def delete_hairstyle(item_id: str, db: Session = Depends(get_db), _: bool = Depe
 @app.get("/api/hair-colors")
 def list_hair_colors(
     category: Optional[str] = Query(None, description="筛选色系"),
+    q: Optional[str] = Query(None, description="搜索关键词（名称）"),
     version: int = Query(0, description="客户端当前版本号"),
     device_id: str = Query(..., description="终端设备标识"),
     db: Session = Depends(get_db),
 ):
-    """获取发色库列表（支持增量同步）"""
+    """获取发色库列表（支持增量同步 + 文本搜索）"""
     query = db.query(HairColor)
 
     if version > 0:
@@ -238,6 +247,11 @@ def list_hair_colors(
 
     if category:
         query = query.filter(HairColor.category == category)
+    if q:
+        like = f"%{q}%"
+        query = query.filter(
+            HairColor.name.like(like) | HairColor.category.like(like)
+        )
 
     items = query.order_by(HairColor.sort_order).all()
 
