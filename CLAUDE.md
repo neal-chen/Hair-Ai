@@ -246,10 +246,22 @@ cd hairstyle_android_pad-main
 
 ## 开发备忘录
 
-### 两个前端副本
-- `faxin/` — 独立的可编辑前端源码
-- `hairstyle_android_pad-main/app/src/main/assets/web/` — App 内嵌的部署副本
-- 修改时注意同步两者，或统一从 `faxin/` 构建后再复制到 assets
+### 前端同步（两个副本）
+
+| 目录 | 角色 | 架构 |
+|---|---|---|
+| `faxin/` | **开发目录** (源码) | SPA，Hash 路由，6 个 JS 模块，无 jQuery |
+| `assets/web/` | **部署目录** (Android) | 多页 HTML，jQuery，39 处 AndroidBridge 调用 |
+
+**同步方式：**
+```bash
+./sync_frontend.sh           # 同步 CSS/JS/图片 到 assets/web/
+./sync_frontend.sh --diff    # 只显示差异
+```
+
+> ⚠️ 两个版本架构不同，目前只同步共有资源（CSS、图片、`android-bridge.js`）。
+> `faxin/` 是新一代 SPA 版本，`assets/web/` 是当前生产版本。
+> 如需在 `faxin/` 中测试 Android 功能，已加入 `android-bridge.js`。
 
 ### 待改进项
 - [ ] 发型图 Assets 文件尚未导入 (`assets/hairstyles_woman/`, `assets/hairstyles_man/`)

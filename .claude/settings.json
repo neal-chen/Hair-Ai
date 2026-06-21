@@ -4,7 +4,11 @@
       "Bash(pip3 install *)",
       "Bash(/home/neo/Hair/server/venv/bin/pip install *)",
       "Bash(server/venv/bin/python3 -c ' *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m 'refactor: split AI processor into modular package *)",
+      "Bash(chmod +x /home/neo/Hair/sync_frontend.sh)",
+      "Bash(./sync_frontend.sh)",
+      "Bash(git commit -m 'chore: sync frontend copies and add sync script *)"
     ]
   }
 }

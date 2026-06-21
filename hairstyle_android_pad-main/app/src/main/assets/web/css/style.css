@@ -1,694 +1,651 @@
-.layout {
-	width:7.5rem;
-	max-width:100%;
-	margin:0 auto;
-	min-height:100vh;
-	background:#DEDFE1;
-	overflow-x:hidden;
+/* ============================================
+   AI 换发型 / 换发色  —  55" 2160×3840 大屏
+   Base: 2160px design width, px units
+   Touch-optimized min target: ~70px
+   ============================================ */
+
+/* ─── Reset ─────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
+html {
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #DEDFE1;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a, button, input, select, textarea {
+  font-family: inherit;
+}
+img {
+  display: block;
+  max-width: 100%;
+}
+ul { list-style: none; }
+a { text-decoration: none; color: inherit; }
+
+/* ─── Layout ────────────────────────────────── */
+.layout {
+  width: 2160px;
+  min-height: 3840px;
+  margin: 0 auto;
+  background: #DEDFE1;
+  position: relative;
+  overflow: hidden;
+}
+/* 桌面小屏测试时缩放适配 */
+@media (max-width: 2160px) {
+  .layout { transform-origin: top center; }
+}
+
+.section1 { min-height: 3840px; }
+
+/* ─── Utility ────────────────────────────────── */
+.wshow { display: block; }
+.whide { display: none; }
+.whide1, .whide2, .whidese, .wshowcg, .wshowsand { display: none; }
+.txtcent { text-align: center !important; }
+
+/* ─── Login ──────────────────────────────────── */
 .login {
-	min-height:100vh;
-	position:relative;
+  min-height: 3840px;
+  position: relative;
 }
 .login .bg {
-	width:100%;
-	min-height:100vh;
-	display:block;
-	object-fit:cover;
+  width: 100%;
+  min-height: 3840px;
+  display: block;
+  object-fit: cover;
 }
 .login .hbtn {
-	width:1.2rem;
-	height:1.2rem;
-	line-height:1.2rem;
-	border-radius:50%;
-	position:absolute;
-	left:50%;
-	top:62%;
-	transform:translate(-50%, -50%);
-	display:block;
-	z-index:11;
-	background:rgba(255,255,255,0.9);
-	box-shadow:0 0.05rem 0.2rem rgba(0,0,0,0.15);
-	text-align:center;
-	font-size:0.18rem;
-	font-weight:bold;
-	color:#A50807;
-	text-decoration:none;
+  width: 1600px;
+  height: auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 120px;
+  display: block;
+  cursor: pointer;
 }
+.login .hbtn img { width: 100%; }
+
+/* ─── Header ────────────────────────────────── */
 .htit {
-	padding:0.6rem 0.3rem 0.5rem;
-	display:flex;
-	justify-content:space-between;
-	align-items:center;
-	flex-wrap:nowrap;
-	min-width:0;
+  padding: 50px 60px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.htit .icon {
-	display:flex;
-	align-items:center;
-	gap:0.15rem;
-}
-.htit .icon a {
-	width:0.9rem;
-	height:0.9rem;
-	display:flex;
-	align-items:center;
-	justify-content:center;
-	background:#fff;
-	border-radius:50%;
-	box-shadow:0 0.04rem 0.16rem rgba(0,0,0,0.15);
-	padding:0.05rem;
-}
+.htit .icon { display: flex; align-items: center; gap: 20px; }
 .htit .icon a img {
-	width:100%;
-	height:100%;
-	display:block;
-	border-radius:50%;
+  width: 100px;
+  height: 100px;
+  display: block;
+  cursor: pointer;
 }
-.htit .hrt {
-	flex-shrink:0;
-	display:flex;
-	align-items:center;
-	gap:0.2rem;
-}
-.htit .hrt img {
-	height:0.88rem;
-	width:auto;
-	max-width:none;
-}
-.hmain {
-	padding:0.1rem 0.3rem 0.6rem;
-}
+.htit .hrt img { height: 100px; }
+
+/* ─── Main Content ──────────────────────────── */
+.hmain { padding: 20px 60px 80px; }
 .hmain h6 {
-	font-size:0.33rem;
-	color:#5D5D5D;
-	text-align:left;
-	line-height:1.6;
-	font-weight:300;
+  font-size: 42px;
+  color: #5D5D5D;
+  font-weight: 300;
+  line-height: 1.6;
 }
-.hmain h4 {
-	font-weight:400;
-	font-size:0.38rem;
-	color:#000000;
-	line-height:0.5rem;
-	margin-top:0.13rem;
+.hmain > h4 {
+  font-weight: 400;
+  font-size: 52px;
+  color: #000;
+  line-height: 1.4;
+  margin-top: 20px;
 }
+
+/* ─── Photo Box ─────────────────────────────── */
 .hmain .hpic {
-	width:6.67rem;
-	height:6.67rem;
-	background:#FDFDFD;
-	border-radius:0.42rem;
-	margin:0.36rem auto 0;
-	padding:0.14rem;
-	position:relative;
+  width: 1600px;
+  height: 1600px;
+  background: #FDFDFD;
+  border-radius: 80px;
+  margin: 60px auto 0;
+  padding: 30px;
+  position: relative;
 }
-.hmain .hpic img {
-	width:100%;
-	height:100%;
-	display:block;
-	object-fit:contain;
+.hmain .hpic > img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  border-radius: 50px;
 }
 .hmain .hpic .bflex {
-	position:absolute;
-	right:0.28rem;
-	bottom:0.28rem;
-	display:flex;
-	z-index:22;
-	align-items:center;
-	overflow:hidden;
+  position: absolute;
+  right: 40px;
+  bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 22;
 }
 .hmain .hpic .bflex .icon {
-	width:0.89rem;
-	position:relative;
-	height:0.89rem;
-	margin-left:0.14rem;
+  width: 130px;
+  height: 130px;
+  position: relative;
+}
+.hmain .hpic .bflex .icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0;
 }
 .hmain .hpic .bflex .icon .file {
-	position:absolute;
-	height:100%;
-	opacity:0;
-	left:0;
-	top:0;
-	width:100%;
-	z-index:2;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
+
+/* ─── Buttons ────────────────────────────────── */
 .flexbtn {
-	display:flex;
-	justify-content:space-between;
-	align-items:center;
-	justify-content:center;
-	margin-top:0.28rem;
-	gap:0 0.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  gap: 30px;
 }
-.flexbtn a {
-	display:block;
-	width:3.2rem;
-	line-height:0.89rem;
-	font-weight:400;
-	font-size:0.28rem;
-	color:#000000;
-	text-align:center;
-	display:block;
-	background:url(../images/hbt4.png) no-repeat center/contain;
-}
-.flexbtn a img {
-	width:100%;
-	display:block;
-}
-.whide {
-	display:none;
+.flexbtn a, .flexbtn .btn {
+  display: block;
+  width: 760px;
+  line-height: 140px;
+  font-size: 44px;
+  color: #000;
+  text-align: center;
+  background: url(../images/hbt4.png) no-repeat center / contain;
+  cursor: pointer;
 }
 .flexbtn .btn {
-	font-weight:400;
-	font-size:0.28rem;
-	color:#000000;
-	text-align:center;
-	display:block;
-	line-height:0.89rem;
-	background:url(../images/hbt3.png) no-repeat center/contain;
-	width:100%;
+  width: 100%;
+  background-image: url(../images/hbt3.png);
 }
+
+/* ─── Mask (modal overlay) ──────────────────── */
 .mask {
-	position:fixed;
-	left:0;
-	right:0;
-	top:0;
-	bottom:0;
-	z-index:99;
-	background:rgba(0,0,0,0.5);
-	display:none;
-	backdrop-filter:blur(0.03rem);
-	-webkit-backdrop-filter:blur(0.03rem);
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
+.mask > div { height: 100%; }
 .flexcent {
-	height:100%;
-	display:flex;
-	flex-direction:column;
-	justify-content:center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 60px;
 }
+
+/* ─── WeChat popup ──────────────────────────── */
 .wtanc {
-	width:4.12rem;
-	height:4.1rem;
-	margin:0 auto;
-	background:url(../images/hbg2.png) no-repeat center/100% 100%;
-	text-align:center;
-	padding-top:0.56rem;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-o-box-sizing:border-box;
-	box-sizing:border-box;
+  width: 800px;
+  padding: 80px 60px 60px;
+  background: url(../images/hbg2.png) no-repeat center / 100% 100%;
+  text-align: center;
 }
 .wtanc img {
-	width:2.12rem;
-	height:2.12rem;
-	display:block;
-	object-fit:contain;
-	margin:0 auto;
+  width: 340px;
+  height: 340px;
+  object-fit: contain;
+  margin: 0 auto;
 }
 .wtanc h5 {
-	font-weight:300;
-	font-size:0.33rem;
-	color:#000000;
-	line-height:0.4rem;
-	margin-top:0.45rem;
+  font-weight: 300;
+  font-size: 42px;
+  color: #000;
+  margin-top: 60px;
+  line-height: 1.4;
 }
 .close {
-	width:0.89rem;
-	margin:0.2rem auto 0;
+  width: 130px;
+  margin: 30px auto 0;
+  cursor: pointer;
 }
-.close img {
-	display:block;
-	width:100%;
-}
+.close img { width: 100%; }
+
+/* ─── Search ────────────────────────────────── */
 .search {
-	width:4.82rem;
-	height:0.88rem;
-	background:url(../images/hsection.png) no-repeat center/contain;
-	padding:0 0.28rem;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-o-box-sizing:border-box;
-	box-sizing:border-box;
-	display:flex;
-	align-items:center;
+  width: 800px;
+  height: 100px;
+  background: url(../images/hsection.png) no-repeat center / contain;
+  padding: 0 50px;
+  display: flex;
+  align-items: center;
 }
 .search img {
-	width:0.33rem;
-	display:block;
-	margin-right:0.1rem;
-	height:auto !important;
+  width: 48px;
+  height: auto;
+  margin-right: 15px;
 }
 .search .txt {
-	font-weight:300;
-	font-size:0.28rem;
-	color:#000000;
-	text-align:left;
-	height:0.88rem;
-	border:none;
-	flex:1;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-o-box-sizing:border-box;
-	box-sizing:border-box;
-	background:none;
+  font-size: 40px;
+  color: #000;
+  height: 100px;
+  border: none;
+  flex: 1;
+  background: none;
+  outline: none;
 }
+
+/* ─── Flex text row ─────────────────────────── */
 .flextxt {
-	display:flex;
-	justify-content:space-between;
-	align-items:center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
 }
-.flextxt .rtc {
-	display:flex;
-	align-items:center;
-}
-.flextxt .rtc img {
-	height:0.54rem;
-	display:block;
-}
-.flextxt .rtc a {
-	margin-left:0.17rem;
-}
-.flextxt .rtc .sex img:nth-child(2) {
-	display:none;
-}
-.flextxt .rtc .sex.on img:nth-child(1) {
-	display:none;
-}
-.flextxt .rtc .sex.on img:nth-child(2) {
-	display:block;
-}
+.flextxt .rtc { display: flex; align-items: center; gap: 20px; }
+.flextxt .rtc img { height: 90px; }
+.flextxt .rtc .sex { cursor: pointer; }
+.flextxt .rtc .sex img:nth-child(2) { display: none; }
+.flextxt .rtc .sex.on img:nth-child(1) { display: none; }
+.flextxt .rtc .sex.on img:nth-child(2) { display: block; }
+
+/* ─── Tabs ──────────────────────────────────── */
 .htab ul {
-	white-space:nowrap;
-	overflow-x:scroll;
-	margin-top:0.35rem;
-	width:calc(100% + 0.3rem);
+  display: flex;
+  gap: 60px;
+  margin-top: 40px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 8px;
 }
-.htab li {
-	display:inline-block;
-	margin-right:0.4rem;
-}
+.htab li { flex-shrink: 0; }
 .htab li a {
-	font-weight:400;
-	font-size:0.33rem;
-	color:#000000;
-	line-height:0.56rem;
-	display:block;
-	position:relative;
-	padding-bottom:0.08rem;
+  font-size: 44px;
+  color: #000;
+  line-height: 1.6;
+  display: block;
+  position: relative;
+  padding-bottom: 12px;
+  cursor: pointer;
 }
 .htab li a i {
-	position:absolute;
-	left:0;
-	right:0;
-	bottom:0;
-	height:0.08rem;
-	bottom:0;
-	border-radius:0.5rem;
-	background:#A50807;
-	display:block;
-	width:0;
-	transition:all 0.3s;
-	-ms-transition:all 0.3s;
-	/* IE 9*/
-	-moz-transition:all 0.3s;
-	/* Firefox*/
-	-webkit-transition:all 0.3s;
-	/* Safari 和 Chrome*/
-	-o-transition:all 0.3s;
-	margin:0 auto;
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 8px;
+  border-radius: 4px;
+  background: #A50807;
+  width: 0;
+  transition: width 0.3s;
+  margin: 0 auto;
 }
-.htab li.on a i {
-	width:100%;
-}
-.htab li.on a {
-	color:#A50807;
-}
-.piclist {
-	margin-top:0.28rem;
-}
+.htab li.on a i { width: 100%; }
+.htab li.on a { color: #A50807; }
+
+/* ─── Gallery Grid ──────────────────────────── */
+.piclist { margin-top: 40px; }
 .piclist ul {
-	display:flex;
-	flex-wrap:wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 .piclist li {
-	width:calc((100% - 0.23rem)/4);
-	margin:0 0.07rem 0.07rem 0;
-	background:#FDFDFD;
-	border-radius:0.21rem;
-	overflow:hidden;
-}
-.piclist li:nth-child(4n) {
-	margin-right:0;
+  background: #FDFDFD;
+  border-radius: 40px;
+  overflow: hidden;
+  cursor: pointer;
 }
 .piclist li a {
-	display:block;
-	padding:0.07rem;
+  display: block;
+  padding: 14px;
 }
 .piclist li .icon img {
-	width:100%;
-	height:1.49rem;
-	display:block;
-	object-fit:cover;
-	border-radius:0.14rem;
-	overflow:hidden;
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  border-radius: 24px;
+  display: block;
 }
 .piclist li .flex {
-	display:flex;
-	justify-content:space-between;
-	align-items:center;
-	padding:0.12rem 0.07rem 0.05rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10px 8px;
 }
 .piclist li h6 {
-	font-weight:400;
-	font-size:0.11rem;
-	color:#000000;
-	text-align:left;
-	line-height:0.15rem;
+  font-size: 28px;
+  color: #000;
 }
 .piclist li i {
-	font-weight:400;
-	font-size:0.08rem;
-	color:#A50807;
-	text-align:center;
-	padding:0 0.03rem;
-	border-radius:0.1rem;
-	line-height:0.14rem;
-	background:rgba(165,8,7,0.05);
-	display:inline-block;
+  font-size: 22px;
+  color: #A50807;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: rgba(165,8,7,0.05);
 }
+
+/* ─── Processing (before/after) ─────────────── */
 .huanse ul {
-	display:flex;
-	flex-wrap:wrap;
-	justify-content:space-between;
-	margin-top:0.22rem;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 40px;
 }
 .huanse ul li {
-	width:3.26rem;
-	height:3.26rem;
-	margin-bottom:0.2rem;
-	background:#FDFDFD;
-	border-radius:0.42rem;
-	padding:0.14rem;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-o-box-sizing:border-box;
-	box-sizing:border-box;
+  width: 720px;
+  height: 720px;
+  background: #FDFDFD;
+  border-radius: 80px;
+  padding: 30px;
 }
 .huanse ul li img {
-	width:100%;
-	height:100%;
-	display:block;
-	object-fit:cover;
-	border-radius:0.28rem;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50px;
 }
 .hmain h2 {
-	font-weight:400;
-	font-size:0.47rem;
-	color:#000000;
-	text-align:center;
-	margin-top:0.1rem;
-	line-height:1.6;
+  font-size: 60px;
+  color: #000;
+  text-align: center;
+  margin-top: 30px;
+  line-height: 1.6;
 }
+
+/* ─── Status Carousel ──────────────────────── */
 .swiperlist {
-	overflow:hidden;
-	height:1.74rem;
-	position:relative;
+  overflow: hidden;
+  height: 260px;
+  position: relative;
+  margin-top: 20px;
 }
 .swiperlist::before {
-	content:'';
-	position:absolute;
-	left:0;
-	right:0;
-	bottom:0;
-	z-index:22;
-	background:linear-gradient(to bottom,rgba(222,223,225,0),rgba(222,223,225,0.8));
-	height:100%;
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(to bottom, rgba(222,223,225,0), rgba(222,223,225,0.8));
+  pointer-events: none;
+}
+.swiperlist ul {
+  display: flex;
+  flex-direction: column;
 }
 .swiperlist li {
-	font-weight:400;
-	font-size:0.28rem;
-	color:#000000;
-	text-align:center;
-	line-height:0.58rem;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: #000;
 }
 .swiperlist li i {
-	display:inline-block;
+  display: inline-block;
+  padding: 0 20px;
 }
-.swiperlist li.swiper-slide-active i {
-	padding-left:0.4rem;
-	background:url(../images/hicon3.png) no-repeat left center/0.32rem auto;
-	padding-right:0.4rem;
-}
+
+/* ─── Cancel button ─────────────────────────── */
 .qxbtn {
-	width:3.2rem;
-	line-height:0.89rem;
-	background:url(../images/hbt4.png) no-repeat center/contain;
-	font-weight:400;
-	font-size:0.28rem;
-	color:#000000;
-	text-align:center;
-	margin:0.4rem auto;
+  width: 760px;
+  line-height: 140px;
+  background: url(../images/hbt4.png) no-repeat center / contain;
+  font-size: 42px;
+  color: #000;
+  text-align: center;
+  margin: 60px auto;
+  cursor: pointer;
 }
+
+/* ─── Result (active img) ──────────────────── */
 .activeimg {
-	width:4.42rem;
-	height:4.42rem;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-o-box-sizing:border-box;
-	box-sizing:border-box;
-	border-radius:0.56rem;
-	padding:0.19rem;
-	margin:0.2rem auto 0;
-	background:rgba(0,0,0,0.1);
-	position:relative;
+  width: 900px;
+  height: 900px;
+  border-radius: 80px;
+  padding: 30px;
+  margin: 30px auto 0;
+  background: rgba(0,0,0,0.1);
+  position: relative;
 }
 .activeimg img {
-	width:100%;
-	height:100%;
-	display:block;
-	object-fit:cover;
-	border-radius:0.28rem;
-	overflow:hidden;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50px;
 }
 .activeimg i {
-	font-weight:500;
-	font-size:0.17rem;
-	color:#3B3B3B;
-	text-align:right;
-	position:absolute;
-	z-index:2;
-	right:0.4rem;
-	bottom:0.4rem;
+  font-size: 28px;
+  color: #3B3B3B;
+  position: absolute;
+  right: 50px;
+  bottom: 50px;
 }
-.activeimg.on i{
-	left: 0.4rem;font-size: 0.12rem;
+.activeimg.on i {
+  left: 50px;
+  font-size: 26px;
+  text-align: left;
 }
 .activeimg .mk {
-	position:absolute;
-	background:rgba(0,0,0,0.5);
-	left:0.19rem;
-	top:0.19rem;
-	right:0.19rem;
-	bottom:0.19rem;
-	z-index:33;
-	border-radius:0.28rem;
-	display:flex;
-	align-items:center;
-	justify-content:center;
+  position: absolute;
+  inset: 30px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .activeimg .mk img {
-	width:0.6rem;
-	height:0.6rem;
-	border-radius:0;
-	object-fit:contain;
+  width: 100px;
+  height: 100px;
+  border-radius: 0;
+  object-fit: contain;
 }
-.whide1,.whide2 {
-	display:none;
-}
+
+/* ─── Modal image ──────────────────────────── */
 .mpic {
-	background:url(../images/hbg3.png) no-repeat center/contain;
-	width:6.67rem;
-	height:6.67rem;
-	margin:0 auto;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-o-box-sizing:border-box;
-	box-sizing:border-box;
-	padding:0.14rem;
-	position:relative;
+  width: 1400px;
+  max-height: 80vh;
+  padding: 30px;
+  background: url(../images/hbg3.png) no-repeat center / contain;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .mpic img {
-	width:100%;
-	height:100%;
-	display:block;
-	object-fit:cover;
-	border-radius:0.28rem;
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 40px;
 }
 .mpic i {
-	padding:0 0.38rem;
-	position:absolute;
-	left:0.28rem;
-	top:0.31rem;
-	z-index:2;
-	line-height:0.58rem;
-	background:url(../images/hbt5.png) no-repeat center/100% 100%;
-	border-radius:0.5rem;
-	font-weight:400;
-	font-size:0.28rem;
-	color:#FFFFFF;
-}
-.mask>div {
-	height:100%;
-}
-.wbga {
-	background:#fff;
-	border-radius:0.28rem;
-	height:100%;
-	overflow:hidden;
-}
-#color-wheel {
-	width:4.3rem;
-	height:4.3rem;
-	border-radius:50%;
-	margin:0.7rem auto 0.6rem;
-	cursor:crosshair;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-#color-value {
-	position:absolute;
-	top:0.4rem;
-	width:1.22rem;
-	left:0.4rem;
-	height:0.53rem;
-	border:2px solid rgba(255,255,255,0.5);
-}
-.fixed-colors {
-	display:flex;
-	justify-content:center;
-	align-items:center;
-	gap:0 0.14rem;
-	margin:0 auto;
-	width:fit-content;
-}
-.fixed-color-item {
-	width:0.53rem;
-	height:0.53rem;
-	border:2px solid rgba(255,255,255,0.5);
-	transition:border-color 0.2s;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-o-box-sizing:border-box;
-	box-sizing:border-box;
-}
-/* 选中的固定色高亮边框*/
-    .fixed-color-item.active {
-	border-color:#999;
-}
-.flexbtn2 a {
-	background:url(../images/hbt5.png) no-repeat center/contain;
-	color:#fff;
-}
-.faxpic ul {
-	display:flex;
-	flex-wrap:wrap;
-	width:4.42rem;
-	margin:0.3rem auto;
-	justify-content:space-between;
-}
-.faxpic ul li {
-	width:2.14rem;
-	height:2.14rem;
-	margin-bottom:0.14rem;
-}
-.faxpic ul li a {
-	display:block;
-	padding:0.09rem;
-	border-radius:0.28rem;
-	background:rgba(0,0,0,0.1);
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-o-box-sizing:border-box;
-	box-sizing:border-box;
-	height:100%;
-	position:relative;
-}
-.faxpic ul li img {
-	width:100%;
-	height:100%;
-	display:block;
-	object-fit:cover;
-	border-radius:0.28rem;
-}
-.hmain h6.txtcent {
-	text-align:center;
-}
-.faxpic ul li .mk {
-	position:absolute;
-	background:rgba(0,0,0,0.5);
-	left:0.09rem;
-	top:0.09rem;
-	right:0.09rem;
-	bottom:0.09rem;
-	z-index:33;
-	border-radius:0.28rem;
-	display:flex;
-	align-items:center;
-	justify-content:center;
-}
-.faxpic ul li .mk img {
-	width:0.36rem;
-	height:0.33rem;
-	border-radius:0;
-	object-fit:contain;
-}
-.swiperpic {
-	overflow:hidden;
-	position:relative;
-	border-radius:0.28rem;
-}
-.swiperpic img {
-	border-radius:0 !important;
-}
-.swiperpic .prev.swiper-button-disabled,.swiperpic .next.swiper-button-disabled {
-	background:url(../images/prev.png) no-repeat center/auto 100%;
-}
-.swiperpic .prev,.swiperpic .next {
-	width:0.21rem;
-	height:0.52rem;
-	position:absolute;
-	left:0;
-	top:50%;
-	margin:0 0.42rem;
-	margin-top:-0.26rem;
-	z-index:22;
-	background:url(../images/prev1.png) no-repeat center/auto 100%;
-}
-.swiperpic .next {
-	left:auto;
-	right:0;
-	transform:rotate(180deg);
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  padding: 0 50px;
+  line-height: 90px;
+  background: url(../images/hbt5.png) no-repeat center / 100% 100%;
+  border-radius: 45px;
+  font-size: 40px;
+  color: #fff;
 }
 .mpic span {
-	font-weight:500;
-	font-size:0.17rem;
-	color:#3B3B3B;
-	position:absolute;
-	line-height:0.2rem;
-	right:0.35rem;
-	bottom:0.35rem;
-	z-index:33;
+  font-size: 28px;
+  color: #3B3B3B;
+  position: absolute;
+  right: 50px;
+  bottom: 50px;
+  line-height: 1.4;
 }
+
+/* ─── Color Wheel ──────────────────────────── */
+.wbga {
+  background: #fff;
+  border-radius: 40px;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  padding: 40px 30px;
+}
+
+.color-wheel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.cw-canvas-wrap {
+  width: 700px;
+  height: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cw-canvas-wrap canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.cw-preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.cw-preview {
+  width: 160px;
+  height: 70px;
+  border-radius: 12px;
+  border: 3px solid rgba(0,0,0,0.15);
+}
+
+.cw-presets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+}
+.cw-swatch {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  border: 3px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.cw-swatch.active {
+  border-color: #999;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.15);
+}
+
+/* ─── Result Grid (faxpic) ─────────────────── */
+.faxpic ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 900px;
+  margin: 30px auto;
+}
+.faxpic ul li {
+  aspect-ratio: 1;
+}
+.faxpic ul li a {
+  display: block;
+  padding: 14px;
+  border-radius: 40px;
+  background: rgba(0,0,0,0.1);
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+}
+.faxpic ul li img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 26px;
+}
+.faxpic ul li .mk {
+  position: absolute;
+  inset: 14px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.faxpic ul li .mk img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  border-radius: 0;
+}
+
+/* ─── Image Carousel ────────────────────────── */
+.carousel {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  border-radius: 40px;
+}
+.carousel-wrapper {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+.carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+.carousel-slide img {
+  width: 100%;
+  display: block;
+  border-radius: 0 !important;
+}
+.carousel-prev,
+.carousel-next {
+  width: 50px;
+  height: 80px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 22;
+  cursor: pointer;
+  background: url(../images/prev1.png) no-repeat center / auto 100%;
+  left: 20px;
+}
+.carousel-next {
+  left: auto;
+  right: 20px;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* ─── Button variants ───────────────────────── */
+.flexbtn2 a { background-image: url(../images/hbt5.png); color: #fff; }
 .flexbtn3 a {
-	width:1.94rem;
-	background:url(../images/hbt6.png) no-repeat center/contain;
-	color:#fff;
+  width: 340px;
+  background-image: url(../images/hbt6.png);
+  color: #fff;
 }
-.flexbtn3 {
-	gap:0 0.42rem;
-}
-.wshowsand,.wshowcg,.whidese {
-	height:100%;
-	display:none;
+.flexbtn3 { gap: 60px; }
+
+/* ─── 2160×3840-specific adjustments ───────── */
+@media (min-width: 2160px) {
+  .layout {
+    width: 100%;
+    max-width: 2160px;
+  }
 }
