@@ -5,6 +5,7 @@ FastAPI 应用，提供发型库和发色库的查询、增量同步、图片服
 
 import json
 import os
+import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -13,9 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
-from sqlalchemy import func, or_
+from sqlalchemy import func
 
-from database import get_db, init_db
+from database import get_db, init_db, SessionLocal
 from models import Hairstyle, HairColor, DeviceSyncLog
 from auth import require_admin, ADMIN_API_KEY
 from schemas import (
@@ -76,13 +77,24 @@ def on_startup():
     os.makedirs(COLOR_IMG_DIR, exist_ok=True)
     init_db()
 
-    # 尝试自动导入种子数据
+    # 自动导入种子数据（数据库为空时）
+    _auto_seed()
+
+
+def _auto_seed():
+    """如果数据库为空，从 JSON 文件导入种子数据"""
+    db = SessionLocal()
     try:
-        from seed import seed_hairstyles, seed_hair_colors
-        seed_hairstyles()
-        seed_hair_colors()
+        if db.query(Hairstyle).count() == 0:
+            from seed import seed_hairstyles
+            seed_hairstyles()
+        if db.query(HairColor).count() == 0:
+            from seed import seed_hair_colors
+            seed_hair_colors()
     except ImportError:
-        pass  # seed.py 不存在时跳过
+        pass  # seed.py 不存在时静默跳过
+    finally:
+        db.close()
 
 
 # ═══════════════════════════════════════════════════════════
@@ -149,7 +161,6 @@ def get_hairstyle(item_id: str, db: Session = Depends(get_db)):
 @app.post("/api/hairstyles")
 def create_hairstyle(data: HairstyleCreate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """新增发型（管理后台用）"""
-    import uuid
     now = datetime.now(timezone.utc)
 
     # 获取当前最大版本号
@@ -264,7 +275,6 @@ def get_hair_color(item_id: str, db: Session = Depends(get_db)):
 @app.post("/api/hair-colors")
 def create_hair_color(data: HairColorCreate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """新增发色（管理后台用）"""
-    import uuid
     now = datetime.now(timezone.utc)
 
     max_ver = db.query(func.max(HairColor.version)).scalar() or 0
@@ -337,7 +347,6 @@ def get_hairstyle_image(item_id: str, db: Session = Depends(get_db)):
 
     # 如果有远程 URL 则重定向
     if item.image_url:
-        from fastapi.responses import RedirectResponse
         return RedirectResponse(url=item.image_url)
 
     raise HTTPException(status_code=404, detail="图片不存在")
@@ -355,7 +364,6 @@ def get_hair_color_image(item_id: str, db: Session = Depends(get_db)):
         return FileResponse(local_path, media_type="image/png")
 
     if item.image_url:
-        from fastapi.responses import RedirectResponse
         return RedirectResponse(url=item.image_url)
 
     raise HTTPException(status_code=404, detail="图片不存在")
