@@ -10,7 +10,8 @@ from typing import Optional
 
 from fastapi import FastAPI, Depends, Query, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
@@ -42,6 +43,17 @@ app.add_middleware(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HAIRSTYLE_IMG_DIR = os.path.join(BASE_DIR, "images", "hairstyles")
 COLOR_IMG_DIR = os.path.join(BASE_DIR, "images", "hair_colors")
+
+# ── 管理后台静态文件 ──
+ADMIN_DIR = os.path.join(BASE_DIR, "admin")
+os.makedirs(ADMIN_DIR, exist_ok=True)
+app.mount("/static/admin", StaticFiles(directory=ADMIN_DIR), name="admin")
+
+
+@app.get("/admin")
+@app.get("/admin/")
+def admin_redirect():
+    return RedirectResponse(url="/static/admin/index.html")
 
 
 @app.on_event("startup")

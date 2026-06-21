@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>发型/发色库 管理后台</title>
+<style>
+:root {
+  --primary: #6366f1; --primary-hover: #4f46e5;
+  --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
+  --bg: #f8fafc; --card: #fff; --text: #1e293b;
+  --border: #e2e8f0; --muted: #64748b;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 14px/1.6 -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+
+/* ── Layout ── */
+.app { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; background: #1e293b; color: #fff; padding: 20px 0; flex-shrink: 0; }
+.sidebar h2 { padding: 0 20px 20px; font-size: 16px; border-bottom: 1px solid #334155; }
+.sidebar nav { padding: 10px 0; }
+.sidebar a { display: block; padding: 10px 20px; color: #94a3b8; text-decoration: none; cursor: pointer; }
+.sidebar a:hover, .sidebar a.active { background: #334155; color: #fff; }
+.main { flex: 1; padding: 24px; overflow-y: auto; max-width: 100%; }
+
+/* ── Header ── */
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.header h1 { font-size: 22px; }
+.header .info { color: var(--muted); font-size: 13px; }
+
+/* ── Cards ── */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.stat-card .num { font-size: 28px; font-weight: 700; }
+.stat-card .label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* ── Table ── */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.toolbar { display: flex; gap: 8px; padding: 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.toolbar input, .toolbar select { padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+.toolbar .spacer { flex: 1; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+th { background: #f8fafc; font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; }
+tr:hover { background: #f1f5f9; }
+td.actions { white-space: nowrap; }
+.empty td { text-align: center; color: var(--muted); padding: 40px; }
+
+/* ── Buttons ── */
+.btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 14px; border: none; border-radius: 6px;
+  font-size: 13px; cursor: pointer; text-decoration: none; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { background: #f1f5f9; }
+
+/* ── Modal ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 999;
+  align-items: center; justify-content: center; }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--card); border-radius: 16px; width: 560px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 0; }
+.modal-header h3 { font-size: 18px; }
+.modal-body { padding: 20px 24px; }
+.modal-footer { padding: 12px 24px 20px; display: flex; gap: 8px; justify-content: flex-end; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+.form-group textarea { min-height: 60px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── Badge ── */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.badge-success { background: #dcfce7; color: #166534; }
+.badge-danger { background: #fee2e2; color: #991b1b; }
+
+/* ── Image preview ── */
+.img-preview { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; background: #f1f5f9; }
+.img-preview-sm { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #f1f5f9; }
+
+/* ── Toast ── */
+.toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 8px; color: #fff;
+  font-size: 13px; z-index: 1000; animation: slideIn .3s; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+.toast-success { background: var(--success); }
+.toast-error { background: var(--danger); }
+@keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ── Section ── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .sidebar h2 { display: none; }
+  .sidebar a { padding: 12px; text-align: center; font-size: 0; }
+  .sidebar a::first-letter { font-size: 16px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>💇 发型库管理</h2>
+  <nav>
+    <a class="active" onclick="showSection('dashboard')">📊 概览</a>
+    <a onclick="showSection('hairstyles-f')">👩 女发管理</a>
+    <a onclick="showSection('hairstyles-m')">👨 男发管理</a>
+    <a onclick="showSection('colors')">🎨 发色管理</a>
+    <a onclick="showSection('devices')">📱 终端列表</a>
+  </nav>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="header">
+    <h1 id="pageTitle">概览</h1>
+    <span class="info" id="serverInfo">—</span>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="section active" id="sec-dashboard">
+    <div class="stats">
+      <div class="stat-card"><div class="num" id="stat-female">—</div><div class="label">女发款式</div></div>
+      <div class="stat-card"><div class="num" id="stat-male">—</div><div class="label">男发款式</div></div>
+      <div class="stat-card"><div class="num" id="stat-colors">—</div><div class="label">发色总数</div></div>
+      <div class="stat-card"><div class="num" id="stat-devices">—</div><div class="label">注册终端</div></div>
+    </div>
+    <div class="card">
+      <div class="toolbar"><strong>分类详情</strong></div>
+      <table><thead><tr><th>分类</th><th>数量</th></tr></thead><tbody id="categoryDetails"></tbody></table>
+    </div>
+  </div>
+
+  <!-- Hairstyles (shared template for both genders) -->
+  <div class="section" id="sec-hairstyles-f">
+    <div class="card">
+      <div class="toolbar">
+        <input placeholder="搜索发型..." id="search-f" oninput="renderHairstyles('f')">
+        <select id="cat-f" onchange="renderHairstyles('f')"><option value="">全部分类</option></select>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" onclick="openHairstyleModal()">+ 新增女发</button>
+      </div>
+      <table><thead><tr>
+        <th style="width:40px">排序</th>
+        <th>图片</th><th>名称</th><th>分类</th><th>标签</th><th>状态</th><th style="width:140px">操作</th>
+      </tr></thead><tbody id="tbody-f"></tbody></table>
+    </div>
+  </div>
+
+  <div class="section" id="sec-hairstyles-m">
+    <div class="card">
+      <div class="toolbar">
+        <input placeholder="搜索发型..." id="search-m" oninput="renderHairstyles('m')">
+        <select id="cat-m" onchange="renderHairstyles('m')"><option value="">全部分类</option></select>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" onclick="openHairstyleModal('m')">+ 新增男发</button>
+      </div>
+      <table><thead><tr>
+        <th style="width:40px">排序</th>
+        <th>图片</th><th>名称</th><th>分类</th><th>标签</th><th>状态</th><th style="width:140px">操作</th>
+      </tr></thead><tbody id="tbody-m"></tbody></table>
+    </div>
+  </div>
+
+  <!-- Colors -->
+  <div class="section" id="sec-colors">
+    <div class="card">
+      <div class="toolbar">
+        <input placeholder="搜索发色..." id="search-c" oninput="renderColors()">
+        <select id="cat-c" onchange="renderColors()"><option value="">全部分类</option></select>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" onclick="openColorModal()">+ 新增发色</button>
+      </div>
+      <table><thead><tr>
+        <th>图片</th><th>名称</th><th>色系</th><th>色值</th><th>排序</th><th>状态</th><th style="width:140px">操作</th>
+      </tr></thead><tbody id="tbody-c"></tbody></table>
+    </div>
+  </div>
+
+  <!-- Devices -->
+  <div class="section" id="sec-devices">
+    <div class="card">
+      <div class="toolbar"><strong>已注册的终端设备</strong></div>
+      <table><thead><tr><th>设备名称</th><th>设备 ID</th><th>发型版本</th><th>发色版本</th><th>最后同步</th></tr></thead>
+        <tbody id="tbody-d"></tbody></table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">编辑</h3>
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="modalSave" onclick="saveModal()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──
+const API = { base: '', hairstyles: [], colors: [], categories: {} };
+let modalMode = ''; let modalId = '';
+
+// ── API Helpers ──
+async function api(path, opts = {}) {
+  const res = await fetch(API.base + path, {
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    ...opts,
+  });
+  const data = await res.json();
+  if (!data.success && !opts.noThrow) throw new Error(data.detail || '请求失败');
+  return data;
+}
+
+async function uploadImage(type, id, file) {
+  const fd = new FormData(); fd.append('file', file);
+  const res = await fetch(`${API.base}/api/${type}/${id}/image`, { method: 'POST', body: fd });
+  return res.json();
+}
+
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`; el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+// ── Navigation ──
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+  const sec = document.getElementById('sec-' + name);
+  if (sec) sec.classList.add('active');
+  const titles = { dashboard: '概览', 'hairstyles-f': '女发管理', 'hairstyles-m': '男发管理',
+    colors: '发色管理', devices: '终端列表' };
+  document.getElementById('pageTitle').textContent = titles[name] || name;
+  document.querySelector(`.sidebar a[onclick*="'${name}'"]`)?.classList.add('active');
+  loadSection(name);
+}
+
+function loadSection(name) {
+  if (name === 'dashboard') loadDashboard();
+  else if (name.startsWith('hairstyles-')) loadHairstyles(name === 'hairstyles-m' ? '男' : '女');
+  else if (name === 'colors') loadColors();
+  else if (name === 'devices') loadDevices();
+}
+
+// ── Dashboard ──
+async function loadDashboard() {
+  try {
+    const d = await api('/api/admin/stats');
+    const s = d.data;
+    document.getElementById('stat-female').textContent = s.female_hairstyles;
+    document.getElementById('stat-male').textContent = s.male_hairstyles;
+    document.getElementById('stat-colors').textContent = s.hair_color_count;
+    document.getElementById('stat-devices').textContent = s.device_count;
+
+    const tbody = document.getElementById('categoryDetails'); tbody.innerHTML = '';
+    const cats = { ...s.hairstyle_categories, ...s.hair_color_categories };
+    // Show hairstyle categories
+    let rows = '';
+    for (const [k, v] of Object.entries(s.hairstyle_categories)) {
+      rows += `<tr><td>${k.replace('_', ' · ')}</td><td>${v}</td></tr>`;
+    }
+    rows += `<tr><td colspan="2"><hr style="border-color:var(--border)"></td></tr>`;
+    for (const [k, v] of Object.entries(s.hair_color_categories)) {
+      rows += `<tr><td>🎨 ${k}</td><td>${v} 色</td></tr>`;
+    }
+    tbody.innerHTML = rows;
+  } catch (e) { toast('加载统计失败: ' + e.message, 'error'); }
+}
+
+// ── Hairstyles ──
+let hairstyleCache = [];
+
+async function loadHairstyles(gender) {
+  try {
+    const d = await api(`/api/hairstyles?gender=${encodeURIComponent(gender)}&version=0&device_id=admin`);
+    hairstyleCache = d.data.hairstyles;
+    // Update category filter
+    const cats = [...new Set(hairstyleCache.map(h => h.category))];
+    const sel = document.getElementById('cat-' + (gender === '男' ? 'm' : 'f'));
+    sel.innerHTML = '<option value="">全部分类</option>' +
+      cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    renderHairstyles(gender === '男' ? 'm' : 'f');
+  } catch (e) { toast('加载发型失败: ' + e.message, 'error'); }
+}
+
+function renderHairstyles(suffix) {
+  const gender = suffix === 'm' ? '男' : '女';
+  const search = (document.getElementById('search-' + suffix)?.value || '').toLowerCase();
+  const cat = document.getElementById('cat-' + suffix)?.value || '';
+  let items = hairstyleCache.filter(h => h.gender === gender && h.is_active !== false);
+  if (search) items = items.filter(h => h.name.includes(search) || h.description.includes(search));
+  if (cat) items = items.filter(h => h.category === cat);
+  items.sort((a, b) => a.sort_order - b.sort_order);
+
+  const tbody = document.getElementById('tbody-' + suffix); tbody.innerHTML = '';
+  if (!items.length) {
+    tbody.innerHTML = '<tr class="empty"><td colspan="7">暂无数据</td></tr>'; return;
+  }
+  for (const h of items) {
+    const imgUrl = h.image_url ? API.base + h.image_url : '';
+    tbody.innerHTML += `<tr>
+      <td>${h.sort_order}</td>
+      <td>${imgUrl ? `<img class="img-preview-sm" src="${imgUrl}" onerror="this.style.display='none'">` : '—'}</td>
+      <td><strong>${h.name}</strong><br><small style="color:var(--muted)">${(h.description || '').slice(0, 30)}</small></td>
+      <td><span class="badge badge-success">${h.category}</span></td>
+      <td>${h.tags && h.tags !== '[]' ? h.tags.slice(0, 30) : '—'}</td>
+      <td><span class="badge ${h.is_active ? 'badge-success' : 'badge-danger'}">${h.is_active ? '启用' : '禁用'}</span></td>
+      <td class="actions">
+        <button class="btn btn-sm btn-outline" onclick="openHairstyleModal('${gender}', '${h.id}')">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteItem('hairstyles', '${h.id}', '${h.name}')">删除</button>
+      </td>
+    </tr>`;
+  }
+}
+
+async function openHairstyleModal(gender = '女', id = null) {
+  modalMode = 'hairstyle'; modalId = id;
+  const isEdit = !!id;
+  const item = isEdit ? hairstyleCache.find(h => h.id === id) : {};
+
+  // Get available categories for this gender
+  const cats = [...new Set(hairstyleCache.filter(h => h.gender === gender).map(h => h.category))];
+  const catOpts = cats.map(c => `<option ${item.category === c ? 'selected' : ''}>${c}</option>`).join('');
+
+  document.getElementById('modalTitle').textContent = isEdit ? '编辑发型' : '新增发型';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="form-row">
+      <div class="form-group"><label>名称 *</label><input id="f-name" value="${item.name || ''}" placeholder="发型名称"></div>
+      <div class="form-group"><label>分类 *</label>
+        <select id="f-category">${catOpts}<option value="__custom__">— 自定义 —</option></select>
+        <input id="f-category-custom" placeholder="新分类名" style="margin-top:4px;display:none">
+      </div>
+    </div>
+    <div class="form-group"><label>描述</label><textarea id="f-desc" rows="3">${item.description || ''}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>性别</label><input value="${gender}" disabled style="background:#f8fafc"></div>
+      <div class="form-group"><label>排序</label><input id="f-order" type="number" value="${item.sort_order || 0}"></div>
+    </div>
+    <div class="form-group"><label>标签 (JSON数组)</label><input id="f-tags" value="${item.tags || '[]'}" placeholder='["卷发","长发"]'></div>
+    <div class="form-group"><label>图片 URL</label><input id="f-img" value="${item.image_url || ''}" placeholder="可选，留空后可上传"></div>
+    <div class="form-group"><label>上传图片</label><input id="f-file" type="file" accept="image/*"></div>
+  `;
+
+  const sel = document.getElementById('f-category');
+  sel.onchange = () => {
+    document.getElementById('f-category-custom').style.display =
+      sel.value === '__custom__' ? 'block' : 'none';
+  };
+  if (item.category && !cats.includes(item.category)) {
+    sel.value = '__custom__';
+    document.getElementById('f-category-custom').style.display = 'block';
+    document.getElementById('f-category-custom').value = item.category;
+  }
+
+  document.getElementById('modal').classList.add('active');
+}
+
+// ── Colors ──
+let colorCache = [];
+
+async function loadColors() {
+  try {
+    const d = await api('/api/hair-colors?version=0&device_id=admin');
+    colorCache = d.data.colors;
+    const cats = [...new Set(colorCache.map(c => c.category))];
+    const sel = document.getElementById('cat-c');
+    sel.innerHTML = '<option value="">全部分类</option>' +
+      cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    renderColors();
+  } catch (e) { toast('加载发色失败: ' + e.message, 'error'); }
+}
+
+function renderColors() {
+  const search = (document.getElementById('search-c')?.value || '').toLowerCase();
+  const cat = document.getElementById('cat-c')?.value || '';
+  let items = colorCache.filter(c => c.is_active !== false);
+  if (search) items = items.filter(c => c.name.includes(search));
+  if (cat) items = items.filter(c => c.category === cat);
+  items.sort((a, b) => a.sort_order - b.sort_order);
+
+  const tbody = document.getElementById('tbody-c'); tbody.innerHTML = '';
+  if (!items.length) {
+    tbody.innerHTML = '<tr class="empty"><td colspan="7">暂无数据</td></tr>'; return;
+  }
+  for (const c of items) {
+    const imgUrl = c.image_url ? API.base + c.image_url : '';
+    tbody.innerHTML += `<tr>
+      <td>${imgUrl ? `<img class="img-preview-sm" src="${imgUrl}" onerror="this.style.display='none'">` :
+        c.color_hex ? `<span style="display:inline-block;width:32px;height:32px;border-radius:4px;background:${c.color_hex};border:1px solid var(--border)"></span>` : '—'}</td>
+      <td><strong>${c.name}</strong></td>
+      <td><span class="badge badge-success">${c.category}</span></td>
+      <td><code>${c.color_hex || '—'}</code></td>
+      <td>${c.sort_order}</td>
+      <td><span class="badge ${c.is_active ? 'badge-success' : 'badge-danger'}">${c.is_active ? '启用' : '禁用'}</span></td>
+      <td class="actions">
+        <button class="btn btn-sm btn-outline" onclick="openColorModal('${c.id}')">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteItem('hair-colors', '${c.id}', '${c.name}')">删除</button>
+      </td>
+    </tr>`;
+  }
+}
+
+async function openColorModal(id = null) {
+  modalMode = 'color'; modalId = id;
+  const isEdit = !!id;
+  const item = isEdit ? colorCache.find(c => c.id === id) : {};
+  const cats = [...new Set(colorCache.map(c => c.category))];
+  const catOpts = cats.map(c => `<option ${item.category === c ? 'selected' : ''}>${c}</option>`).join('');
+
+  document.getElementById('modalTitle').textContent = isEdit ? '编辑发色' : '新增发色';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="form-row">
+      <div class="form-group"><label>名称 *</label><input id="c-name" value="${item.name || ''}"></div>
+      <div class="form-group"><label>色系 *</label>
+        <select id="c-category">${catOpts}<option value="__custom__">— 自定义 —</option></select>
+        <input id="c-category-custom" placeholder="新色系名" style="margin-top:4px;display:none">
+      </div>
+    </div>
+    <div class="form-group"><label>染发流程 (Markdown)</label><textarea id="c-proc" rows="4">${(item.procedure || '').replace(/</g, '&lt;')}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>色值 (Hex)</label><input id="c-hex" value="${item.color_hex || ''}" placeholder="#C4925A"></div>
+      <div class="form-group"><label>排序</label><input id="c-order" type="number" value="${item.sort_order || 0}"></div>
+    </div>
+    <div class="form-group"><label>图片 URL</label><input id="c-img" value="${item.image_url || ''}"></div>
+    <div class="form-group"><label>上传图片</label><input id="c-file" type="file" accept="image/*"></div>
+  `;
+
+  const sel = document.getElementById('c-category');
+  sel.onchange = () => {
+    document.getElementById('c-category-custom').style.display =
+      sel.value === '__custom__' ? 'block' : 'none';
+  };
+  if (item.category && !cats.includes(item.category)) {
+    sel.value = '__custom__';
+    document.getElementById('c-category-custom').style.display = 'block';
+    document.getElementById('c-category-custom').value = item.category;
+  }
+
+  document.getElementById('modal').classList.add('active');
+}
+
+// ── Save Modal ──
+async function saveModal() {
+  const btn = document.getElementById('modalSave'); btn.disabled = true; btn.textContent = '保存中...';
+  try {
+    if (modalMode === 'hairstyle') await saveHairstyle();
+    else if (modalMode === 'color') await saveColor();
+    toast('保存成功');
+    closeModal();
+    // Reload current section
+    const active = document.querySelector('.section.active');
+    if (active) {
+      const name = active.id.replace('sec-', '');
+      loadSection(name);
+    }
+  } catch (e) { toast('保存失败: ' + e.message, 'error'); }
+  finally { btn.disabled = false; btn.textContent = '保存'; }
+}
+
+async function saveHairstyle() {
+  const id = modalId;
+  const gender = document.querySelector('#modalBody input[disabled]')?.value || '女';
+  let cat = document.getElementById('f-category').value;
+  if (cat === '__custom__') cat = document.getElementById('f-category-custom').value;
+
+  const body = {
+    name: document.getElementById('f-name').value,
+    category: cat,
+    description: document.getElementById('f-desc').value,
+    gender: gender,
+    sort_order: parseInt(document.getElementById('f-order').value) || 0,
+    tags: document.getElementById('f-tags').value || '[]',
+    image_url: document.getElementById('f-img').value || '',
+  };
+  if (!body.name) throw new Error('名称不能为空');
+  if (!body.category) throw new Error('分类不能为空');
+
+  if (id) {
+    await api(`/api/hairstyles/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+  } else {
+    await api('/api/hairstyles', { method: 'POST', body: JSON.stringify(body) });
+  }
+
+  // Upload file if selected
+  const fileInput = document.getElementById('f-file');
+  if (fileInput?.files?.length) {
+    const newId = id || (await api('/api/hairstyles?version=0&device_id=admin')).data.hairstyles.slice(-1)[0].id;
+    await uploadImage('hairstyles', newId, fileInput.files[0]);
+  }
+}
+
+async function saveColor() {
+  const id = modalId;
+  let cat = document.getElementById('c-category').value;
+  if (cat === '__custom__') cat = document.getElementById('c-category-custom').value;
+
+  const body = {
+    name: document.getElementById('c-name').value,
+    category: cat,
+    procedure: document.getElementById('c-proc').value || '',
+    color_hex: document.getElementById('c-hex').value || null,
+    sort_order: parseInt(document.getElementById('c-order').value) || 0,
+    image_url: document.getElementById('c-img').value || '',
+  };
+  if (!body.name) throw new Error('名称不能为空');
+  if (!body.category) throw new Error('色系不能为空');
+
+  if (id) {
+    await api(`/api/hair-colors/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+  } else {
+    await api('/api/hair-colors', { method: 'POST', body: JSON.stringify(body) });
+  }
+
+  const fileInput = document.getElementById('c-file');
+  if (fileInput?.files?.length) {
+    const newId = id || (await api('/api/hair-colors?version=0&device_id=admin')).data.colors.slice(-1)[0].id;
+    await uploadImage('hair-colors', newId, fileInput.files[0]);
+  }
+}
+
+// ── Delete ──
+async function deleteItem(type, id, name) {
+  if (!confirm(`确定删除「${name}」？(软删除)`) ) return;
+  try {
+    await api(`/api/${type}/${id}`, { method: 'DELETE' });
+    toast('已删除');
+    const active = document.querySelector('.section.active');
+    if (active) loadSection(active.id.replace('sec-', ''));
+  } catch (e) { toast('删除失败: ' + e.message, 'error'); }
+}
+
+// ── Devices ──
+async function loadDevices() {
+  try {
+    const d = await api('/api/admin/devices');
+    const tbody = document.getElementById('tbody-d'); tbody.innerHTML = '';
+    const devs = d.data.devices;
+    if (!devs.length) {
+      tbody.innerHTML = '<tr class="empty"><td colspan="5">暂无终端注册</td></tr>'; return;
+    }
+    for (const dev of devs) {
+      tbody.innerHTML += `<tr>
+        <td><strong>${dev.device_name || '未知'}</strong></td>
+        <td><code>${dev.device_id}</code></td>
+        <td>v${dev.last_hairstyle_version}</td>
+        <td>v${dev.last_color_version}</td>
+        <td>${dev.last_sync_at ? new Date(dev.last_sync_at).toLocaleString() : '—'}</td>
+      </tr>`;
+    }
+  } catch (e) { toast('加载终端失败: ' + e.message, 'error'); }
+}
+
+// ── Modal Close ──
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+}
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ── Load server info ──
+(async function init() {
+  try {
+    const h = await api('/api/health');
+    document.getElementById('serverInfo').textContent = `${h.service} v${h.version} · ${h.status}`;
+  } catch (e) {
+    document.getElementById('serverInfo').textContent = '⚠️ 无法连接服务器';
+  }
+  loadDashboard();
+})();
+</script>
+</body>
+</html>
