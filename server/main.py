@@ -51,10 +51,22 @@ os.makedirs(ADMIN_DIR, exist_ok=True)
 app.mount("/static/admin", StaticFiles(directory=ADMIN_DIR), name="admin")
 
 
-@app.get("/admin")
-@app.get("/admin/")
+@app.get("/admin", include_in_schema=False)
+@app.get("/admin/", include_in_schema=False)
 def admin_redirect():
     return RedirectResponse(url="/static/admin/index.html")
+
+
+@app.get("/", include_in_schema=False)
+def root_redirect():
+    return RedirectResponse(url="/static/admin/index.html")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return RedirectResponse(url="/static/admin/favicon.ico") if os.path.exists(
+        os.path.join(ADMIN_DIR, "favicon.ico")
+    ) else JSONResponse(status_code=204)
 
 
 @app.on_event("startup")
