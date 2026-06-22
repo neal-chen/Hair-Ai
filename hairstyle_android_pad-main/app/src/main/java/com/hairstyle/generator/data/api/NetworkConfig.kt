@@ -138,4 +138,11 @@ object NetworkConfig {
     val aiGenerationApiService: HairstyleApiService by lazy {
         createLongTimeoutRetrofit().create(HairstyleApiService::class.java)
     }
+
+    /**
+     * 发型/发色库同步 API 实例
+     */
+    val libraryApiService: LibraryApiService by lazy {
+        createRetrofit().create(LibraryApiService::class.java)
+    }
 }

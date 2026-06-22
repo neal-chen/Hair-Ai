@@ -16,7 +16,7 @@ import com.hairstyle.generator.utils.DeviceUtils
  */
 class LibrarySyncManager(private val context: Context) {
 
-    private val api: LibraryApiService = NetworkConfig.apiService as LibraryApiService
+    private val api: LibraryApiService = NetworkConfig.libraryApiService
     private val db = AppDatabase.getInstance(context)
 
     private val hairstyleRepo = HairstyleSyncRepository(

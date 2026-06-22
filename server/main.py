@@ -135,7 +135,7 @@ def _auto_seed():
 #  发型库 API
 # ═══════════════════════════════════════════════════════════
 
-@app.get("/api/hairstyles")
+@app.get("/api/hairstyles", tags=["发型库"])
 def list_hairstyles(
     gender: Optional[str] = Query(None, description="筛选性别：男/女"),
     category: Optional[str] = Query(None, description="筛选分类"),
@@ -191,7 +191,7 @@ def list_hairstyles(
     }
 
 
-@app.get("/api/hairstyles/{item_id}")
+@app.get("/api/hairstyles/{item_id}", tags=["发型库"])
 def get_hairstyle(item_id: str, db: Session = Depends(get_db)):
     """获取单个发型详情"""
     item = db.query(Hairstyle).filter(
@@ -202,7 +202,7 @@ def get_hairstyle(item_id: str, db: Session = Depends(get_db)):
     return {"success": True, "data": item.to_dict()}
 
 
-@app.post("/api/hairstyles")
+@app.post("/api/hairstyles", tags=["发型库"])
 def create_hairstyle(data: HairstyleCreate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """新增发型（管理后台用）"""
     now = datetime.now(timezone.utc)
@@ -229,7 +229,7 @@ def create_hairstyle(data: HairstyleCreate, db: Session = Depends(get_db), _: bo
     return {"success": True, "data": item.to_dict()}
 
 
-@app.put("/api/hairstyles/{item_id}")
+@app.put("/api/hairstyles/{item_id}", tags=["发型库"])
 def update_hairstyle(item_id: str, data: HairstyleUpdate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """更新发型（管理后台用）"""
     item = db.query(Hairstyle).filter(Hairstyle.id == item_id).first()
@@ -248,7 +248,7 @@ def update_hairstyle(item_id: str, data: HairstyleUpdate, db: Session = Depends(
     return {"success": True, "data": item.to_dict()}
 
 
-@app.delete("/api/hairstyles/{item_id}")
+@app.delete("/api/hairstyles/{item_id}", tags=["发型库"])
 def delete_hairstyle(item_id: str, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """软删除发型（管理后台用）"""
     item = db.query(Hairstyle).filter(Hairstyle.id == item_id).first()
@@ -265,7 +265,7 @@ def delete_hairstyle(item_id: str, db: Session = Depends(get_db), _: bool = Depe
 #  发色库 API
 # ═══════════════════════════════════════════════════════════
 
-@app.get("/api/hair-colors")
+@app.get("/api/hair-colors", tags=["发色库"])
 def list_hair_colors(
     category: Optional[str] = Query(None, description="筛选色系"),
     q: Optional[str] = Query(None, description="搜索关键词（名称）"),
@@ -313,7 +313,7 @@ def list_hair_colors(
     }
 
 
-@app.get("/api/hair-colors/{item_id}")
+@app.get("/api/hair-colors/{item_id}", tags=["发色库"])
 def get_hair_color(item_id: str, db: Session = Depends(get_db)):
     """获取单个发色详情"""
     item = db.query(HairColor).filter(
@@ -324,7 +324,7 @@ def get_hair_color(item_id: str, db: Session = Depends(get_db)):
     return {"success": True, "data": item.to_dict()}
 
 
-@app.post("/api/hair-colors")
+@app.post("/api/hair-colors", tags=["发色库"])
 def create_hair_color(data: HairColorCreate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """新增发色（管理后台用）"""
     now = datetime.now(timezone.utc)
@@ -349,7 +349,7 @@ def create_hair_color(data: HairColorCreate, db: Session = Depends(get_db), _: b
     return {"success": True, "data": item.to_dict()}
 
 
-@app.put("/api/hair-colors/{item_id}")
+@app.put("/api/hair-colors/{item_id}", tags=["发色库"])
 def update_hair_color(item_id: str, data: HairColorUpdate, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """更新发色（管理后台用）"""
     item = db.query(HairColor).filter(HairColor.id == item_id).first()
@@ -368,7 +368,7 @@ def update_hair_color(item_id: str, data: HairColorUpdate, db: Session = Depends
     return {"success": True, "data": item.to_dict()}
 
 
-@app.delete("/api/hair-colors/{item_id}")
+@app.delete("/api/hair-colors/{item_id}", tags=["发色库"])
 def delete_hair_color(item_id: str, db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """软删除发色（管理后台用）"""
     item = db.query(HairColor).filter(HairColor.id == item_id).first()
@@ -385,7 +385,7 @@ def delete_hair_color(item_id: str, db: Session = Depends(get_db), _: bool = Dep
 #  图片服务 API
 # ═══════════════════════════════════════════════════════════
 
-@app.get("/api/hairstyles/{item_id}/image")
+@app.get("/api/hairstyles/{item_id}/image", tags=["图片"])
 def get_hairstyle_image(item_id: str, db: Session = Depends(get_db)):
     """获取发型图片"""
     item = db.query(Hairstyle).filter(Hairstyle.id == item_id).first()
@@ -404,7 +404,7 @@ def get_hairstyle_image(item_id: str, db: Session = Depends(get_db)):
     raise HTTPException(status_code=404, detail="图片不存在")
 
 
-@app.get("/api/hair-colors/{item_id}/image")
+@app.get("/api/hair-colors/{item_id}/image", tags=["图片"])
 def get_hair_color_image(item_id: str, db: Session = Depends(get_db)):
     """获取发色图片"""
     item = db.query(HairColor).filter(HairColor.id == item_id).first()
@@ -421,7 +421,7 @@ def get_hair_color_image(item_id: str, db: Session = Depends(get_db)):
     raise HTTPException(status_code=404, detail="图片不存在")
 
 
-@app.post("/api/hairstyles/{item_id}/image")
+@app.post("/api/hairstyles/{item_id}/image", tags=["图片"])
 async def upload_hairstyle_image(item_id: str, file: UploadFile = File(...), db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """上传发型图片（管理后台用）"""
     item = db.query(Hairstyle).filter(Hairstyle.id == item_id).first()
@@ -443,7 +443,7 @@ async def upload_hairstyle_image(item_id: str, file: UploadFile = File(...), db:
     return {"success": True, "data": {"image_url": item.image_url}}
 
 
-@app.post("/api/hair-colors/{item_id}/image")
+@app.post("/api/hair-colors/{item_id}/image", tags=["图片"])
 async def upload_hair_color_image(item_id: str, file: UploadFile = File(...), db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """上传发色图片（管理后台用）"""
     item = db.query(HairColor).filter(HairColor.id == item_id).first()
@@ -468,7 +468,7 @@ async def upload_hair_color_image(item_id: str, file: UploadFile = File(...), db
 #  终端同步 API
 # ═══════════════════════════════════════════════════════════
 
-@app.post("/api/library/sync")
+@app.post("/api/library/sync", tags=["同步"])
 def report_sync(data: SyncRequest, db: Session = Depends(get_db)):
     """终端上报同步状态"""
     now = datetime.now(timezone.utc)
@@ -502,7 +502,7 @@ def report_sync(data: SyncRequest, db: Session = Depends(get_db)):
 #  管理统计 API
 # ═══════════════════════════════════════════════════════════
 
-@app.get("/api/admin/stats")
+@app.get("/api/admin/stats", tags=["管理"])
 def get_stats(db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """运营统计"""
     hairstyle_count = db.query(Hairstyle).filter(Hairstyle.is_active == True).count()
@@ -548,7 +548,7 @@ def get_stats(db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     }
 
 
-@app.get("/api/admin/devices")
+@app.get("/api/admin/devices", tags=["管理"])
 def list_devices(db: Session = Depends(get_db), _: bool = Depends(require_admin)):
     """查看所有已注册终端"""
     devices = db.query(DeviceSyncLog).order_by(DeviceSyncLog.last_sync_at.desc()).all()
@@ -562,7 +562,7 @@ def list_devices(db: Session = Depends(get_db), _: bool = Depends(require_admin)
 
 # ── 管理后台认证 ──
 
-@app.post("/api/admin/login")
+@app.post("/api/admin/login", tags=["管理"])
 def admin_login(body: dict):
     """管理后台登录验证"""
     key = body.get("api_key", "")
@@ -573,7 +573,7 @@ def admin_login(body: dict):
 
 # ── 健康检查 ──
 
-@app.get("/api/health")
+@app.get("/api/health", tags=["系统"])
 def health_check():
     return {"status": "ok", "service": "hair-library-api", "version": "1.0.0"}
 
